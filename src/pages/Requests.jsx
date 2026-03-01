@@ -1,0 +1,387 @@
+import React, { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
+import { Package, Check, ChevronRight, ChevronLeft, Plus, Minus, CheckCircle } from 'lucide-react';
+
+const P = { navy: '#0B1F3A', teal: '#0FA3B1', gold: '#D4AF37', bg: '#F7F9FC', text: '#2E3440', border: '#E1E6EF' };
+
+const REQUEST_TYPES = [
+  { value: 'new_hire', label: 'New Hire', desc: 'Onboarding new employees' },
+  { value: 'expansion', label: 'Dept. Expansion', desc: 'Scale up team capacity' },
+  { value: 'replacement', label: 'Replacement', desc: 'Replace faulty device' },
+  { value: 'upgrade', label: 'Upgrade', desc: 'Upgrade existing device' },
+  { value: 'loaner', label: 'Loaner', desc: 'Short-term temporary device' },
+];
+
+const DEVICE_CLASSES = [
+  { value: 'standard', label: 'Standard Workforce', desc: 'General office work, email, browsing', spec: 'i5, 8GB RAM, 256GB SSD', price: '₦85,000/mo' },
+  { value: 'developer', label: 'Developer / Power User', desc: 'Development, design, resource-intensive tasks', spec: 'i7, 16GB RAM, 512GB SSD', price: '₦145,000/mo' },
+  { value: 'executive', label: 'Executive', desc: 'Premium devices for leadership & client-facing roles', spec: 'MacBook Pro or premium Windows', price: '₦185,000/mo' },
+];
+
+const SERVICE_BUNDLES = [
+  { value: 'standard', label: 'Standard SLA', desc: '48-hour swap', features: ['Business hours support', '48hr response', 'Standard shipping', 'Email support'], price: 'Included' },
+  { value: 'premium', label: 'Premium SLA', desc: '24-hour swap', features: ['24/7 support', '24hr response', 'Express shipping', 'Phone & email support'], price: '+₦8,000/device/mo' },
+  { value: 'executive', label: 'Executive SLA', desc: 'Next business day + priority', features: ['Dedicated agent', 'Next day swap', 'White glove service', 'Priority queue'], price: '+₦15,000/device/mo' },
+];
+
+const LOCATIONS = ['Lagos HQ - Victoria Island', 'Abuja Office - Maitama', 'Port Harcourt Office', 'Ibadan Branch'];
+const DEPARTMENTS = ['Information Technology', 'Finance', 'Human Resources', 'Sales & Marketing', 'Operations'];
+const APPROVERS = ['Amaka Okafor - CFO', 'Bola Adebayo - Head of HR', 'Chidi Nwosu - IT Manager'];
+const BRANDS = ['Dell', 'HP', 'Lenovo', 'Apple'];
+const PROCESSORS = ['Intel Core i5 (12th Gen)', 'Intel Core i7 (12th Gen)', 'AMD Ryzen 5', 'AMD Ryzen 7', 'Apple M2', 'Apple M3'];
+const RAMS = ['8GB', '16GB', '32GB'];
+const STORAGES = ['256GB SSD', '512GB SSD', '1TB SSD'];
+const SCREENS = ['13"', '14"', '15"', '16"'];
+const OS_LIST = ['Windows 11 Pro', 'macOS'];
+const ACCESSORIES = ['Wireless Mouse', 'Laptop Bag', 'USB-C Dock', 'External Monitor (24")', 'Webcam', 'Headset'];
+
+const STEPS = ['Request Info', 'Device Class', 'Specifications', 'Service Bundle', 'Review'];
+
+export default function Requests() {
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [view, setView] = useState('list');
+  const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [form, setForm] = useState({
+    requestType: '', quantity: 1, deliveryLocation: '', requiredDate: '', costCenter: '', approver: '',
+    deviceClass: '', brand: '', processor: '', ram: '', storage: '', screenSize: '', os: '',
+    accessories: [], serviceBundle: 'standard', notes: '',
+  });
+
+  useEffect(() => {
+    base44.entities.DeviceRequest.list('-created_date', 50).then(r => { setRequests(r); setLoading(false); });
+  }, []);
+
+  const update = (field, val) => setForm(f => ({ ...f, [field]: val }));
+  const toggleAccessory = (a) => {
+    setForm(f => ({ ...f, accessories: f.accessories.includes(a) ? f.accessories.filter(x=>x!==a) : [...f.accessories, a] }));
+  };
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    await base44.entities.DeviceRequest.create({ ...form, status: 'pending_approval' });
+    const updated = await base44.entities.DeviceRequest.list('-created_date', 50);
+    setRequests(updated);
+    setSuccess(true);
+    setSubmitting(false);
+    setTimeout(() => { setView('list'); setStep(1); setForm({ requestType:'', quantity:1, deliveryLocation:'', requiredDate:'', costCenter:'', approver:'', deviceClass:'', brand:'', processor:'', ram:'', storage:'', screenSize:'', os:'', accessories:[], serviceBundle:'standard', notes:'' }); setSuccess(false); }, 2000);
+  };
+
+  const step1Valid = form.requestType && form.deliveryLocation && form.costCenter && form.approver;
+  const step2Valid = form.deviceClass;
+  const step3Valid = true;
+  const step4Valid = form.serviceBundle;
+
+  if (view === 'new') {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: P.bg }}>
+        <div className="bg-white shadow-sm">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: P.navy }}>
+                <Package className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold" style={{ color: P.navy }}>New Device Request</h1>
+                <p className="text-xs" style={{ color: P.text }}>Configure and submit your order</p>
+              </div>
+            </div>
+            <button onClick={() => { setView('list'); setStep(1); }} className="text-sm font-medium" style={{ color: P.text }}>Cancel</button>
+          </div>
+        </div>
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Progress */}
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <div className="flex items-center justify-between">
+              {STEPS.map((label, i) => (
+                <React.Fragment key={i}>
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm" style={{ backgroundColor: step > i+1 ? '#10B981' : step === i+1 ? P.teal : P.border, color: step >= i+1 ? 'white' : P.text }}>
+                      {step > i+1 ? <Check className="w-5 h-5" /> : i+1}
+                    </div>
+                    <div className="text-xs mt-2 font-medium text-center hidden sm:block" style={{ color: step >= i+1 ? P.navy : P.text }}>{label}</div>
+                  </div>
+                  {i < STEPS.length-1 && <div className="flex-1 h-0.5 mx-3 mb-5" style={{ backgroundColor: step > i+1 ? '#10B981' : P.border }} />}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-8">
+            {success && (
+              <div className="text-center py-10">
+                <CheckCircle className="w-14 h-14 mx-auto mb-4 text-green-500" />
+                <h2 className="text-2xl font-bold mb-2" style={{ color: P.navy }}>Request Submitted!</h2>
+                <p style={{ color: P.text }}>Your device request is pending approval. Returning to list...</p>
+              </div>
+            )}
+
+            {!success && step === 1 && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-1" style={{ color: P.navy }}>Request Information</h2>
+                  <p style={{ color: P.text }}>Tell us about your device needs</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-3" style={{ color: P.navy }}>Request Type <span className="text-red-500">*</span></label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {REQUEST_TYPES.map(rt => (
+                      <button key={rt.value} onClick={() => update('requestType', rt.value)} className="p-4 rounded-xl border-2 text-left transition-all" style={{ borderColor: form.requestType===rt.value ? P.teal : P.border, backgroundColor: form.requestType===rt.value ? '#F0FAFB' : 'white' }}>
+                        <div className="font-semibold text-sm" style={{ color: P.navy }}>{rt.label}</div>
+                        <div className="text-xs mt-0.5" style={{ color: P.text }}>{rt.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Quantity <span className="text-red-500">*</span></label>
+                    <div className="flex items-center space-x-3">
+                      <button onClick={() => update('quantity', Math.max(1, form.quantity-1))} className="w-10 h-10 rounded-lg border-2 flex items-center justify-center" style={{ borderColor: P.border }}>
+                        <Minus className="w-4 h-4" style={{ color: P.navy }} />
+                      </button>
+                      <input type="number" value={form.quantity} onChange={e=>update('quantity', parseInt(e.target.value)||1)} className="flex-1 text-center px-4 py-2 border-2 rounded-lg font-semibold" style={{ borderColor: P.border, color: P.navy }} />
+                      <button onClick={() => update('quantity', form.quantity+1)} className="w-10 h-10 rounded-lg border-2 flex items-center justify-center" style={{ borderColor: P.border }}>
+                        <Plus className="w-4 h-4" style={{ color: P.navy }} />
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Required Date</label>
+                    <input type="date" value={form.requiredDate} onChange={e=>update('requiredDate',e.target.value)} className="w-full px-4 py-2.5 border-2 rounded-lg text-sm" style={{ borderColor: P.border, color: P.navy }} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Delivery Location <span className="text-red-500">*</span></label>
+                    <select value={form.deliveryLocation} onChange={e=>update('deliveryLocation',e.target.value)} className="w-full px-4 py-2.5 border-2 rounded-lg text-sm" style={{ borderColor: P.border, color: P.navy }}>
+                      <option value="">Select location</option>
+                      {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Department / Cost Center <span className="text-red-500">*</span></label>
+                    <select value={form.costCenter} onChange={e=>update('costCenter',e.target.value)} className="w-full px-4 py-2.5 border-2 rounded-lg text-sm" style={{ borderColor: P.border, color: P.navy }}>
+                      <option value="">Select department</option>
+                      {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Approver <span className="text-red-500">*</span></label>
+                  <select value={form.approver} onChange={e=>update('approver',e.target.value)} className="w-full px-4 py-2.5 border-2 rounded-lg text-sm" style={{ borderColor: P.border, color: P.navy }}>
+                    <option value="">Select approver</option>
+                    {APPROVERS.map(a => <option key={a} value={a}>{a}</option>)}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {!success && step === 2 && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-1" style={{ color: P.navy }}>Select Device Class</h2>
+                  <p style={{ color: P.text }}>Choose the appropriate tier for your users</p>
+                </div>
+                <div className="space-y-4">
+                  {DEVICE_CLASSES.map(dc => (
+                    <button key={dc.value} onClick={() => update('deviceClass', dc.value)} className="w-full p-6 rounded-xl border-2 text-left transition-all" style={{ borderColor: form.deviceClass===dc.value ? P.teal : P.border, backgroundColor: form.deviceClass===dc.value ? '#F0FAFB' : 'white' }}>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="text-lg font-bold mb-1" style={{ color: P.navy }}>{dc.label}</h3>
+                          <p className="text-sm mb-2" style={{ color: P.text }}>{dc.desc}</p>
+                          <span className="text-xs px-3 py-1 rounded-full" style={{ backgroundColor: P.bg, color: P.text }}>Recommended: {dc.spec}</span>
+                        </div>
+                        <div className="text-right ml-6">
+                          <div className="text-2xl font-bold" style={{ color: P.gold }}>{dc.price}</div>
+                          <div className="text-xs" style={{ color: P.text }}>per device</div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!success && step === 3 && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-1" style={{ color: P.navy }}>Configure Specifications</h2>
+                  <p style={{ color: P.text }}>Customize your device requirements (all optional)</p>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  {[
+                    { field: 'brand', label: 'Brand', opts: BRANDS },
+                    { field: 'processor', label: 'Processor', opts: PROCESSORS },
+                    { field: 'ram', label: 'RAM', opts: RAMS },
+                    { field: 'storage', label: 'Storage', opts: STORAGES },
+                    { field: 'screenSize', label: 'Screen Size', opts: SCREENS },
+                    { field: 'os', label: 'Operating System', opts: OS_LIST },
+                  ].map(({ field, label, opts }) => (
+                    <div key={field}>
+                      <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>{label}</label>
+                      <select value={form[field]} onChange={e=>update(field,e.target.value)} className="w-full px-4 py-2.5 border-2 rounded-lg text-sm" style={{ borderColor: P.border, color: P.navy }}>
+                        <option value="">Any / No preference</option>
+                        {opts.map(o => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-3" style={{ color: P.navy }}>Accessories (Optional)</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {ACCESSORIES.map(a => (
+                      <label key={a} className="flex items-center p-3 rounded-xl border-2 cursor-pointer" style={{ borderColor: P.border }}>
+                        <input type="checkbox" checked={form.accessories.includes(a)} onChange={() => toggleAccessory(a)} className="mr-3" style={{ accentColor: P.teal }} />
+                        <span className="text-sm" style={{ color: P.navy }}>{a}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!success && step === 4 && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-1" style={{ color: P.navy }}>Select Service Bundle</h2>
+                  <p style={{ color: P.text }}>Choose your SLA and support level</p>
+                </div>
+                <div className="space-y-4">
+                  {SERVICE_BUNDLES.map(b => (
+                    <button key={b.value} onClick={() => update('serviceBundle', b.value)} className="w-full p-6 rounded-xl border-2 text-left transition-all" style={{ borderColor: form.serviceBundle===b.value ? P.teal : P.border, backgroundColor: form.serviceBundle===b.value ? '#F0FAFB' : 'white' }}>
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h3 className="text-lg font-bold mb-0.5" style={{ color: P.navy }}>{b.label}</h3>
+                          <p className="text-sm" style={{ color: P.text }}>{b.desc}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xl font-bold" style={{ color: b.value==='standard' ? P.teal : P.gold }}>{b.price}</div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {b.features.map((f,i) => (
+                          <div key={i} className="flex items-center text-sm" style={{ color: P.text }}>
+                            <Check className="w-4 h-4 mr-2" style={{ color: P.teal }} />
+                            {f}
+                          </div>
+                        ))}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!success && step === 5 && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-1" style={{ color: P.navy }}>Review & Submit</h2>
+                  <p style={{ color: P.text }}>Confirm your request details</p>
+                </div>
+                {[
+                  { title: 'Request Info', items: [['Type', REQUEST_TYPES.find(r=>r.value===form.requestType)?.label], ['Quantity', form.quantity], ['Location', form.deliveryLocation], ['Department', form.costCenter], ['Approver', form.approver], ['Required Date', form.requiredDate || '—']] },
+                  { title: 'Device', items: [['Class', DEVICE_CLASSES.find(d=>d.value===form.deviceClass)?.label], ['Brand', form.brand||'Any'], ['Processor', form.processor||'Any'], ['RAM', form.ram||'Any'], ['Storage', form.storage||'Any'], ['OS', form.os||'Any']] },
+                  { title: 'Service', items: [['Bundle', SERVICE_BUNDLES.find(b=>b.value===form.serviceBundle)?.label], ['Accessories', form.accessories.join(', ') || 'None']] },
+                ].map(section => (
+                  <div key={section.title} className="p-5 rounded-xl" style={{ backgroundColor: P.bg }}>
+                    <h3 className="font-bold mb-3" style={{ color: P.navy }}>{section.title}</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {section.items.map(([l,v]) => (
+                        <div key={l}>
+                          <div className="text-xs" style={{ color: P.text }}>{l}</div>
+                          <div className="text-sm font-semibold mt-0.5" style={{ color: P.navy }}>{v || '—'}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!success && (
+              <div className="flex items-center justify-between pt-8 mt-8" style={{ borderTop: `1px solid ${P.border}` }}>
+                <button onClick={() => setStep(s => Math.max(1, s-1))} disabled={step===1} className="px-6 py-3 rounded-xl font-medium flex items-center disabled:opacity-40" style={{ color: P.navy }}>
+                  <ChevronLeft className="w-4 h-4 mr-1" /> Previous
+                </button>
+                {step < 5 ? (
+                  <button onClick={() => setStep(s => s+1)} disabled={step===1 && !step1Valid || step===2 && !step2Valid} className="px-8 py-3 rounded-xl font-semibold text-white flex items-center disabled:opacity-40" style={{ backgroundColor: P.teal }}>
+                    Next Step <ChevronRight className="w-4 h-4 ml-1" />
+                  </button>
+                ) : (
+                  <button onClick={handleSubmit} disabled={submitting} className="px-8 py-3 rounded-xl font-semibold text-white disabled:opacity-50" style={{ backgroundColor: P.teal }}>
+                    {submitting ? 'Submitting...' : 'Submit Request'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: P.bg }}>
+      <div className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold" style={{ color: P.navy }}>Device Requests</h1>
+            <p className="text-sm mt-0.5" style={{ color: P.text }}>{requests.length} total requests</p>
+          </div>
+          <button onClick={() => setView('new')} className="px-4 py-2 rounded-lg font-semibold text-white text-sm flex items-center" style={{ backgroundColor: P.teal }}>
+            <Plus className="w-4 h-4 mr-1.5" /> New Request
+          </button>
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          {loading ? (
+            <div className="p-16 text-center" style={{ color: P.text }}>Loading...</div>
+          ) : requests.length === 0 ? (
+            <div className="p-16 text-center">
+              <Package className="w-12 h-12 mx-auto mb-4" style={{ color: P.border }} />
+              <p className="font-medium" style={{ color: P.navy }}>No requests yet</p>
+              <button onClick={() => setView('new')} className="text-sm mt-2 font-medium" style={{ color: P.teal }}>Create your first request →</button>
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead>
+                <tr style={{ backgroundColor: P.bg, borderBottom: `1px solid ${P.border}` }}>
+                  {['Request', 'Type', 'Qty', 'Device Class', 'Location', 'Approver', 'Status'].map(h => (
+                    <th key={h} className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: P.text }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {requests.map((r, i) => (
+                  <tr key={r.id} className="hover:bg-gray-50 transition-colors" style={{ borderBottom: i < requests.length-1 ? `1px solid ${P.border}` : 'none' }}>
+                    <td className="px-6 py-4 font-mono font-bold text-xs" style={{ color: P.teal }}>REQ-{r.id?.slice(-4)?.toUpperCase()}</td>
+                    <td className="px-6 py-4 text-sm" style={{ color: P.navy }}>{REQUEST_TYPES.find(t=>t.value===r.request_type)?.label || r.request_type}</td>
+                    <td className="px-6 py-4 text-sm font-semibold" style={{ color: P.navy }}>{r.quantity}</td>
+                    <td className="px-6 py-4 text-sm" style={{ color: P.navy }}>{DEVICE_CLASSES.find(d=>d.value===r.device_class)?.label || r.device_class}</td>
+                    <td className="px-6 py-4 text-sm" style={{ color: P.text }}>{r.delivery_location}</td>
+                    <td className="px-6 py-4 text-sm" style={{ color: P.text }}>{r.approver}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        r.status==='approved'||r.status==='delivered' ? 'bg-green-100 text-green-700' :
+                        r.status==='pending_approval' ? 'bg-yellow-100 text-yellow-700' :
+                        r.status==='rejected' ? 'bg-red-100 text-red-700' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>
+                        {(r.status||'draft').replace('_',' ')}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
