@@ -53,6 +53,7 @@ import Devices from './pages/Devices';
 import Tickets from './pages/Tickets';
 import Requests from './pages/Requests';
 import Billing from './pages/Billing';
+import Admin from './pages/Admin';
 import __Layout from './Layout.jsx';
 
 
@@ -63,6 +64,7 @@ export const PAGES = {
     "Tickets": Tickets,
     "Requests": Requests,
     "Billing": Billing,
+    "Admin": Admin,
 }
 
 export const pagesConfig = {
