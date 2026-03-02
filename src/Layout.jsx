@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { label: 'Tickets', page: 'Tickets', icon: Wrench },
   { label: 'Health', page: 'DeviceHealth', icon: Activity },
   { label: 'Procurement', page: 'Procurement', icon: BarChart3 },
+  { label: 'Billing', page: 'Billing', icon: CreditCard },
   { label: 'Analytics', page: 'Analytics', icon: BarChart3 },
   { label: 'Admin', page: 'Admin', icon: Settings },
 ];
