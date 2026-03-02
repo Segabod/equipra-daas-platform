@@ -76,6 +76,9 @@ export default function Admin() {
               <button onClick={() => setTab('users')} className="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2" style={{ backgroundColor: tab === 'users' ? P.navy : 'transparent', color: tab === 'users' ? 'white' : P.text }}>
                 <Shield className="w-4 h-4" />User Roles
               </button>
+              <button onClick={() => setTab('billing')} className="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2" style={{ backgroundColor: tab === 'billing' ? P.navy : 'transparent', color: tab === 'billing' ? 'white' : P.text }}>
+                <CreditCard className="w-4 h-4" />Billing
+              </button>
               <button onClick={() => setTab('audit')} className="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2" style={{ backgroundColor: tab === 'audit' ? P.navy : 'transparent', color: tab === 'audit' ? 'white' : P.text }}>
                 <BarChart3 className="w-4 h-4" />Audit Log
               </button>
