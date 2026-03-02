@@ -589,10 +589,21 @@ export default function Requests() {
           {/* Cost Summary Sidebar */}
           {!success && step >= 2 && (
             <div className="w-72 flex-shrink-0 space-y-4">
-              <CostSummary form={form} />
+              <div className="space-y-2">
+                <CostSummary form={form} yearNumber={1} />
+                <div className="text-center">
+                  <div className="text-xs mt-2" style={{ color: P.text }}>Year 2 pricing preview</div>
+                  <CostSummary form={form} yearNumber={2} />
+                </div>
+              </div>
               <div className="bg-white rounded-xl shadow-sm p-4 text-xs" style={{ color: P.text }}>
-                <p className="font-semibold mb-1" style={{ color: P.navy }}>How pricing works</p>
-                <p>Base device fee + SLA bundle + accessories, multiplied by quantity, plus 7.5% VAT. Billed monthly.</p>
+                <p className="font-semibold mb-1" style={{ color: P.navy }}>Depreciation Schedule</p>
+                <div className="space-y-1 text-xs mt-2">
+                  <div className="flex justify-between"><span>Year 1:</span><span className="font-semibold">100%</span></div>
+                  <div className="flex justify-between"><span>Year 2:</span><span className="font-semibold">80%</span></div>
+                  <div className="flex justify-between"><span>Year 3+:</span><span className="font-semibold">60%</span></div>
+                </div>
+                <p className="mt-2" style={{ color: '#6B7280' }}>Device costs reduce each year. SLA & accessories are not depreciated.</p>
               </div>
             </div>
           )}
