@@ -139,6 +139,19 @@ export default function InsuranceClaims() {
     }, 2500);
   };
 
+  const sendClaimNotification = (claim, newStatus, extra = {}) => {
+    base44.functions.invoke('claimNotification', {
+      claimId: claim.id,
+      claimNumber: claim.claim_number,
+      newStatus,
+      deviceModel: claim.device_model,
+      deviceAssetTag: claim.device_asset_tag,
+      assignedUser: claim.assigned_user,
+      assignedEmail: claim.assigned_email || claim.assigned_user,
+      rejectionReason: extra.rejection_reason || claim.rejection_reason || '',
+    }).catch(() => {});
+  };
+
   const handleStatusUpdate = async (claim, newStatus, extra = {}) => {
     // If trying to approve a high-value claim without manager approval, route to manager approval instead
     if (newStatus === 'approved' && claim.requires_manager_approval && !claim.manager_approved) {
@@ -146,6 +159,7 @@ export default function InsuranceClaims() {
     }
     await base44.entities.InsuranceClaim.update(claim.id, { status: newStatus, ...extra });
     await logAudit({ action: 'status_change', entityType: 'InsuranceClaim', entityId: claim.id, entityLabel: claim.claim_number, details: `Claim status updated to ${newStatus}`, oldValue: claim.status, newValue: newStatus });
+    sendClaimNotification(claim, newStatus, extra);
     const updated = await base44.entities.InsuranceClaim.list('-created_date', 100);
     setClaims(updated);
     const freshClaim = updated.find(c => c.id === claim.id) || { ...detailClaim, status: newStatus, ...extra };
