@@ -103,11 +103,36 @@ export default function InsuranceClaims() {
   };
 
   const handleStatusUpdate = async (claim, newStatus, extra = {}) => {
+    // If trying to approve a high-value claim without manager approval, route to manager approval instead
+    if (newStatus === 'approved' && claim.requires_manager_approval && !claim.manager_approved) {
+      newStatus = 'pending_manager_approval';
+    }
     await base44.entities.InsuranceClaim.update(claim.id, { status: newStatus, ...extra });
     await logAudit({ action: 'status_change', entityType: 'InsuranceClaim', entityId: claim.id, entityLabel: claim.claim_number, details: `Claim status updated to ${newStatus}`, oldValue: claim.status, newValue: newStatus });
     const updated = await base44.entities.InsuranceClaim.list('-created_date', 100);
     setClaims(updated);
-    setDetailClaim({ ...detailClaim, status: newStatus, ...extra });
+    const freshClaim = updated.find(c => c.id === claim.id) || { ...detailClaim, status: newStatus, ...extra };
+    setDetailClaim(freshClaim);
+  };
+
+  const handleManagerApproval = async (claim, approved) => {
+    const updates = {
+      manager_approved: approved,
+      manager_approved_by: user?.full_name || user?.email || 'Manager',
+      manager_approval_notes: managerNotes,
+      manager_approval_date: new Date().toISOString().split('T')[0],
+      status: approved ? 'approved' : 'rejected',
+      ...((!approved && rejectionReason) ? { rejection_reason: rejectionReason } : {}),
+    };
+    await base44.entities.InsuranceClaim.update(claim.id, updates);
+    await logAudit({ action: approved ? 'approve' : 'reject', entityType: 'InsuranceClaim', entityId: claim.id, entityLabel: claim.claim_number, details: `Manager ${approved ? 'approved' : 'rejected'} high-value claim${managerNotes ? `: ${managerNotes}` : ''}` });
+    const updated = await base44.entities.InsuranceClaim.list('-created_date', 100);
+    setClaims(updated);
+    const freshClaim = updated.find(c => c.id === claim.id);
+    setDetailClaim(freshClaim);
+    setManagerNotes('');
+    setRejectionReason('');
+    setShowRejectInput(false);
   };
 
   const requiresPoliceReport = ['theft', 'loss'].includes(form.incidentType);
