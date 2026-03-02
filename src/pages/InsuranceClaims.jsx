@@ -17,14 +17,17 @@ const INCIDENT_TYPES = [
 ];
 
 const STATUS_CONFIG = {
-  draft:        { label: 'Draft',        color: '#6B7280', bg: '#F3F4F6' },
-  submitted:    { label: 'Submitted',    color: '#2563EB', bg: '#DBEAFE' },
-  under_review: { label: 'Under Review', color: '#D97706', bg: '#FEF3C7' },
-  approved:     { label: 'Approved',     color: '#059669', bg: '#D1FAE5' },
-  rejected:     { label: 'Rejected',     color: '#DC2626', bg: '#FEE2E2' },
-  paid:         { label: 'Paid',         color: '#059669', bg: '#D1FAE5' },
-  withdrawn:    { label: 'Withdrawn',    color: '#6B7280', bg: '#F3F4F6' },
+  draft:                    { label: 'Draft',                   color: '#6B7280', bg: '#F3F4F6' },
+  submitted:                { label: 'Submitted',               color: '#2563EB', bg: '#DBEAFE' },
+  under_review:             { label: 'Under Review',            color: '#D97706', bg: '#FEF3C7' },
+  pending_manager_approval: { label: 'Pending Mgr Approval',   color: '#7C3AED', bg: '#EDE9FE' },
+  approved:                 { label: 'Approved',                color: '#059669', bg: '#D1FAE5' },
+  rejected:                 { label: 'Rejected',                color: '#DC2626', bg: '#FEE2E2' },
+  paid:                     { label: 'Paid',                    color: '#059669', bg: '#D1FAE5' },
+  withdrawn:                { label: 'Withdrawn',               color: '#6B7280', bg: '#F3F4F6' },
 };
+
+const MANAGER_THRESHOLD = 500000; // ₦500,000
 
 export default function InsuranceClaims() {
   const [view, setView] = useState('list'); // 'list' | 'new'
