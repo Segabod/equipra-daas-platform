@@ -127,6 +127,7 @@ export default function InsuranceClaims() {
       supporting_docs: uploadedDocs.filter(d => d.url).map(d => `${d.label}: ${d.url}`).join('\n'),
     });
     await logAudit({ action: 'create', entityType: 'InsuranceClaim', entityId: claim?.id, entityLabel: claimNum, details: `Insurance claim submitted for ${selectedDevice.model} (${selectedDevice.asset_tag})` });
+    sendClaimNotification({ ...claim, claim_number: claimNum, device_model: selectedDevice.model, device_asset_tag: selectedDevice.asset_tag, assigned_user: selectedDevice.assigned_user, assigned_email: selectedDevice.assigned_email }, 'submitted');
     const updated = await base44.entities.InsuranceClaim.list('-created_date', 100);
     setClaims(updated);
     setSuccess(true);
