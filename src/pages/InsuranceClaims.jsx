@@ -501,6 +501,32 @@ export default function InsuranceClaims() {
                 <div className="text-sm mb-1" style={{ color: P.text }}>Incident Description</div>
                 <p className="text-sm p-3 rounded-xl" style={{ backgroundColor: P.bg, color: P.navy }}>{detailClaim.incident_description}</p>
               </div>
+              {/* Attached Documents */}
+              {detailClaim.supporting_docs && (
+                <div>
+                  <div className="text-sm font-semibold mb-2" style={{ color: P.navy }}>Attached Documents</div>
+                  <div className="space-y-2">
+                    {detailClaim.supporting_docs.split('\n').filter(Boolean).map((line, i) => {
+                      const [label, url] = line.split(': ');
+                      return (
+                        <div key={i} className="flex items-center justify-between p-2.5 rounded-lg border" style={{ borderColor: P.border }}>
+                          <div className="flex items-center gap-2">
+                            <Paperclip className="w-4 h-4 flex-shrink-0" style={{ color: P.teal }} />
+                            <span className="text-sm" style={{ color: P.navy }}>{label}</span>
+                          </div>
+                          {url && url.startsWith('http') && (
+                            <a href={url} target="_blank" rel="noopener noreferrer"
+                              className="text-xs font-semibold px-2.5 py-1 rounded-lg"
+                              style={{ backgroundColor: P.bg, color: P.teal }}>
+                              View ↗
+                            </a>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               {detailClaim.requires_manager_approval && (
                 <div className="p-3 rounded-xl" style={{ backgroundColor: '#EDE9FE', border: '1px solid #C4B5FD' }}>
                   <div className="flex items-center gap-2 mb-1">
