@@ -519,50 +519,94 @@ export default function Requests() {
                     </div>
                   </div>
                 ))}
-                {/* Cost Breakdown */}
+                {/* Cost Breakdown - Year 1 & Year 2 */}
                 {(() => {
-                  const { classPrice, bundlePrice, accessoryPrice, perDevice, subtotal, vat, total } = calcTotal(form);
+                  const year1 = calcTotal(form, 1);
+                  const year2 = calcTotal(form, 2);
                   const selectedAcc = PAID_ACCESSORIES.filter(a => form.accessories.includes(a.name));
                   return (
-                    <div className="rounded-xl p-5" style={{ backgroundColor: '#0B1F3A' }}>
-                      <h3 className="font-bold mb-4 text-white">Total Cost Estimate</h3>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between text-white/70">
-                          <span>Device ({DEVICE_CLASSES.find(d=>d.value===form.deviceClass)?.label})</span>
-                          <span className="text-white">₦{classPrice.toLocaleString()}/mo</span>
-                        </div>
-                        {bundlePrice > 0 && (
+                    <div className="space-y-4">
+                      {/* Year 1 */}
+                      <div className="rounded-xl p-5" style={{ backgroundColor: '#0B1F3A' }}>
+                        <h3 className="font-bold mb-4 text-white">Year 1 Cost Estimate</h3>
+                        <div className="space-y-2 text-sm">
                           <div className="flex justify-between text-white/70">
-                            <span>SLA Bundle ({SERVICE_BUNDLES.find(b=>b.value===form.serviceBundle)?.label})</span>
-                            <span className="text-white">+₦{bundlePrice.toLocaleString()}/mo</span>
+                            <span>Device ({DEVICE_CLASSES.find(d=>d.value===form.deviceClass)?.label})</span>
+                            <span className="text-white">₦{year1.classPrice.toLocaleString()}/mo</span>
                           </div>
-                        )}
-                        {selectedAcc.map(a => (
-                          <div key={a.name} className="flex justify-between text-white/60 text-xs">
-                            <span>{a.name}</span>
-                            <span style={{ color: '#D4AF37' }}>+₦{a.price.toLocaleString()}/mo</span>
+                          {year1.bundlePrice > 0 && (
+                            <div className="flex justify-between text-white/70">
+                              <span>SLA Bundle ({SERVICE_BUNDLES.find(b=>b.value===form.serviceBundle)?.label})</span>
+                              <span className="text-white">+₦{year1.bundlePrice.toLocaleString()}/mo</span>
+                            </div>
+                          )}
+                          {selectedAcc.map(a => (
+                            <div key={a.name} className="flex justify-between text-white/60 text-xs">
+                              <span>{a.name}</span>
+                              <span style={{ color: '#D4AF37' }}>+₦{a.price.toLocaleString()}/mo</span>
+                            </div>
+                          ))}
+                          <div className="flex justify-between text-white/70 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+                            <span>Per device/mo</span>
+                            <span className="text-white font-semibold">₦{year1.perDevice.toLocaleString()}</span>
                           </div>
-                        ))}
-                        <div className="flex justify-between text-white/70 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-                          <span>Per device/mo</span>
-                          <span className="text-white font-semibold">₦{perDevice.toLocaleString()}</span>
-                        </div>
-                        {form.quantity > 1 && (
-                          <div className="flex justify-between text-white/70">
-                            <span>× {form.quantity} devices</span>
-                            <span className="text-white">₦{subtotal.toLocaleString()}/mo</span>
+                          {form.quantity > 1 && (
+                            <div className="flex justify-between text-white/70">
+                              <span>× {form.quantity} devices</span>
+                              <span className="text-white">₦{year1.subtotal.toLocaleString()}/mo</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between text-white/60 text-xs">
+                            <span>VAT (7.5%)</span>
+                            <span>₦{year1.vat.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
                           </div>
-                        )}
-                        <div className="flex justify-between text-white/60 text-xs">
-                          <span>VAT (7.5%)</span>
-                          <span>₦{vat.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
-                        </div>
-                        <div className="flex justify-between pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.25)' }}>
-                          <span className="font-bold text-white text-base">Monthly Total</span>
-                          <span className="text-2xl font-black" style={{ color: '#D4AF37' }}>₦{total.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                          <div className="flex justify-between pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.25)' }}>
+                            <span className="font-bold text-white text-base">Monthly Total</span>
+                            <span className="text-2xl font-black" style={{ color: '#D4AF37' }}>₦{year1.total.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                          </div>
                         </div>
                       </div>
-                      <p className="text-xs mt-3" style={{ color: 'rgba(255,255,255,0.4)' }}>This estimate will appear on your invoice after approval.</p>
+
+                      {/* Year 2 */}
+                      <div className="rounded-xl p-5" style={{ backgroundColor: '#1a3a3a' }}>
+                        <h3 className="font-bold mb-4 text-white">Year 2 Cost Estimate <span style={{ color: '#10B981', fontSize: '0.875rem' }}>(20% depreciation)</span></h3>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between text-white/70">
+                            <span>Device ({DEVICE_CLASSES.find(d=>d.value===form.deviceClass)?.label})</span>
+                            <span className="text-white">₦{year2.classPrice.toLocaleString()}/mo</span>
+                          </div>
+                          {year2.bundlePrice > 0 && (
+                            <div className="flex justify-between text-white/70">
+                              <span>SLA Bundle ({SERVICE_BUNDLES.find(b=>b.value===form.serviceBundle)?.label})</span>
+                              <span className="text-white">+₦{year2.bundlePrice.toLocaleString()}/mo</span>
+                            </div>
+                          )}
+                          {selectedAcc.map(a => (
+                            <div key={a.name} className="flex justify-between text-white/60 text-xs">
+                              <span>{a.name}</span>
+                              <span style={{ color: '#D4AF37' }}>+₦{a.price.toLocaleString()}/mo</span>
+                            </div>
+                          ))}
+                          <div className="flex justify-between text-white/70 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+                            <span>Per device/mo</span>
+                            <span className="text-white font-semibold">₦{year2.perDevice.toLocaleString()}</span>
+                          </div>
+                          {form.quantity > 1 && (
+                            <div className="flex justify-between text-white/70">
+                              <span>× {form.quantity} devices</span>
+                              <span className="text-white">₦{year2.subtotal.toLocaleString()}/mo</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between text-white/60 text-xs">
+                            <span>VAT (7.5%)</span>
+                            <span>₦{year2.vat.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                          </div>
+                          <div className="flex justify-between pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.25)' }}>
+                            <span className="font-bold text-white text-base">Monthly Total</span>
+                            <span className="text-2xl font-black" style={{ color: '#D4AF37' }}>₦{year2.total.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   );
                 })()}
