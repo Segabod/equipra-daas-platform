@@ -70,6 +70,23 @@ export default function InsuranceClaims() {
     policeReport: '', estimatedValue: '', needsPoliceReport: false,
   });
 
+  const requiredDocLabels = form.incidentType
+    ? [...ALL_ALWAYS, ...(REQUIRED_DOCS[form.incidentType] || [])]
+    : [...ALL_ALWAYS];
+
+  const uploadedLabels = uploadedDocs.map(d => d.label);
+  const allDocsUploaded = requiredDocLabels.every(l => uploadedLabels.includes(l));
+
+  const handleFileUpload = async (label, file) => {
+    setUploadedDocs(prev => [...prev.filter(d => d.label !== label), { label, file: file.name, url: null, uploading: true }]);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setUploadedDocs(prev => prev.map(d => d.label === label ? { ...d, url: file_url, uploading: false } : d));
+  };
+
+  const handleRemoveDoc = (label) => {
+    setUploadedDocs(prev => prev.filter(d => d.label !== label));
+  };
+
   useEffect(() => {
     Promise.all([
       base44.entities.InsuranceClaim.list('-created_date', 100),
