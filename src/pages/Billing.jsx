@@ -339,9 +339,31 @@ export default function Billing() {
             <h1 className="text-2xl font-bold" style={{ color: P.navy }}>Billing & Invoices</h1>
             <p className="text-sm mt-0.5" style={{ color: P.text }}>Manage subscriptions and payments</p>
           </div>
-          <button className="px-4 py-2 rounded-lg border-2 text-sm font-medium flex items-center" style={{ borderColor: P.border, color: P.navy }}>
-            <Download className="w-4 h-4 mr-1.5" />Export Statement
-          </button>
+          <div className="relative">
+             <button 
+               onClick={() => setExportFormat(exportFormat ? null : 'menu')}
+               className="px-4 py-2 rounded-lg border-2 text-sm font-medium flex items-center" 
+               style={{ borderColor: P.border, color: P.navy }}>
+               <Download className="w-4 h-4 mr-1.5" />Export Statement
+               <ChevronDown className="w-4 h-4 ml-1.5" />
+             </button>
+             {exportFormat === 'menu' && (
+               <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border z-10" style={{ borderColor: P.border }}>
+                 <button 
+                   onClick={() => handleExportStatement('csv')}
+                   className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors border-b"
+                   style={{ borderColor: P.border, color: P.navy }}>
+                   Export as CSV
+                 </button>
+                 <button 
+                   onClick={() => handleExportStatement('pdf')}
+                   className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors"
+                   style={{ color: P.navy }}>
+                   Export as PDF
+                 </button>
+               </div>
+             )}
+           </div>
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
