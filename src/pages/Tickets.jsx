@@ -310,11 +310,59 @@ export default function Tickets() {
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-          <div className="relative">
+        {/* Detail Modal */}
+        {detailTicket && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+              <div className="p-5 flex items-center justify-between" style={{ borderBottom: `1px solid ${P.border}` }}>
+                <div>
+                  <h2 className="text-lg font-bold" style={{ color: P.navy }}>TK-{detailTicket.id?.slice(-4)?.toUpperCase()}</h2>
+                  <p className="text-sm" style={{ color: P.text }}>{detailTicket.device_model} · {detailTicket.device_asset_tag}</p>
+                </div>
+                <button onClick={() => setDetailTicket(null)}><X className="w-5 h-5" style={{ color: P.text }} /></button>
+              </div>
+              <div className="p-5 space-y-4">
+                {[['Issue Type', ISSUE_TYPES.find(i=>i.value===detailTicket.issue_type)?.label], ['Severity', detailTicket.severity], ['Status', (detailTicket.status||'open').replace('_',' ')], ['Assigned User', detailTicket.assigned_user||'—'], ['Department', detailTicket.department||'—'], ['SLA Target', detailTicket.sla_target||'—'], ['Pickup Location', detailTicket.pickup_location||'—'], ['Technician', detailTicket.technician||'Unassigned']].map(([l,v]) => (
+                  <div key={l} className="flex justify-between text-sm"><span style={{ color: P.text }}>{l}</span><span className="font-semibold" style={{ color: P.navy }}>{v}</span></div>
+                ))}
+                <div>
+                  <div className="text-sm mb-1" style={{ color: P.text }}>Description</div>
+                  <p className="text-sm p-3 rounded-xl" style={{ backgroundColor: P.bg, color: P.navy }}>{detailTicket.description}</p>
+                </div>
+                <div>
+                  <div className="text-sm font-semibold mb-2" style={{ color: P.navy }}>Assign to IT Admin</div>
+                  <div className="flex flex-wrap gap-2">
+                    {IT_ADMINS.map(tech => (
+                      <button key={tech} onClick={() => handleAssignTech(detailTicket, tech)} className="px-3 py-1.5 rounded-lg text-xs font-medium border-2" style={{ borderColor: detailTicket.technician === tech ? P.teal : P.border, backgroundColor: detailTicket.technician === tech ? '#F0FAFB' : 'white', color: P.navy }}>
+                        <User className="w-3 h-3 inline mr-1" />{tech.split(' - ')[0]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm font-semibold mb-2" style={{ color: P.navy }}>Update Status</div>
+                  <div className="flex flex-wrap gap-2">
+                    {['open', 'in_progress', 'in_repair', 'resolved', 'closed'].map(st => (
+                      <button key={st} onClick={() => handleStatusChange(detailTicket, st)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize ${detailTicket.status===st?'text-white':''}`} style={{ backgroundColor: detailTicket.status===st ? P.teal : P.bg, color: detailTicket.status===st ? 'white' : P.text }}>
+                        {st.replace('_',' ')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-wrap gap-3">
+          <div className="relative flex-1 min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: P.text }} />
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search tickets..." className="w-full pl-10 pr-4 py-2 border-2 rounded-lg text-sm" style={{ borderColor: P.border }} />
           </div>
+          <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="px-4 py-2 border-2 rounded-lg text-sm" style={{ borderColor: P.border, color: P.navy }}>
+            <option value="all">All Status</option>
+            {['open','in_progress','pickup_scheduled','in_repair','swap_delivered','resolved','closed'].map(s => <option key={s} value={s}>{s.replace('_',' ')}</option>)}
+          </select>
         </div>
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           {loading ? (
@@ -329,7 +377,7 @@ export default function Tickets() {
             <table className="w-full">
               <thead>
                 <tr style={{ backgroundColor: P.bg, borderBottom: `1px solid ${P.border}` }}>
-                  {['Ticket', 'Device', 'Issue', 'Severity', 'Status', 'SLA'].map(h => (
+                  {['Ticket', 'Device', 'Issue', 'Severity', 'Technician', 'Status', 'SLA', ''].map(h => (
                     <th key={h} className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: P.text }}>{h}</th>
                   ))}
                 </tr>
@@ -348,13 +396,17 @@ export default function Tickets() {
                       <td className="px-6 py-4">
                         {sev && <span className="px-2 py-1 rounded-full text-xs font-bold" style={{ backgroundColor: `${sev.color}15`, color: sev.color }}>{sev.label}</span>}
                       </td>
+                      <td className="px-6 py-4 text-xs" style={{ color: P.text }}>{t.technician ? t.technician.split(' - ')[0] : <span style={{ color: '#9CA3AF' }}>Unassigned</span>}</td>
                       <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${t.status==='resolved'||t.status==='closed' ? 'bg-green-100 text-green-700' : t.status==='in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${t.status==='resolved'||t.status==='closed' ? 'bg-green-100 text-green-700' : t.status==='in_progress'||t.status==='in_repair' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
                           {(t.status||'open').replace('_',' ')}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm" style={{ color: P.text }}>
                         <div className="flex items-center"><Clock className="w-3.5 h-3.5 mr-1" />{t.sla_target || sev?.sla || '—'}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <button onClick={() => setDetailTicket(t)} className="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ backgroundColor: P.teal }}>Manage</button>
                       </td>
                     </tr>
                   );
