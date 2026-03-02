@@ -428,6 +428,20 @@ export default function InsuranceClaims() {
                     <div className="text-xs font-semibold mb-1" style={{ color: P.text }}>Incident Description</div>
                     <p className="text-sm" style={{ color: P.navy }}>{form.incidentDescription}</p>
                   </div>
+                  <div className="p-4 rounded-xl mb-4" style={{ backgroundColor: '#F0FDF4', border: '1px solid #BBF7D0' }}>
+                    <div className="text-xs font-semibold mb-2 flex items-center gap-1.5" style={{ color: '#065F46' }}>
+                      <Check className="w-3.5 h-3.5" /> Attached Documents ({uploadedDocs.filter(d => d.url).length})
+                    </div>
+                    <div className="space-y-1.5">
+                      {uploadedDocs.filter(d => d.url).map(d => (
+                        <div key={d.label} className="flex items-center gap-2 text-xs" style={{ color: '#047857' }}>
+                          <Paperclip className="w-3 h-3" />
+                          <span className="font-medium">{d.label}</span>
+                          <span className="text-green-400">— {d.file}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                   <div className="flex justify-between pt-4" style={{ borderTop: `1px solid ${P.border}` }}>
                     <button onClick={() => setStep(3)} className="px-6 py-3 rounded-xl font-medium" style={{ color: P.navy }}>Back</button>
                     <button onClick={handleSubmitClaim} disabled={submitting} className="px-8 py-3 rounded-xl font-semibold text-white disabled:opacity-50" style={{ backgroundColor: P.teal }}>
