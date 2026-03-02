@@ -28,10 +28,10 @@ export default function UserRoleManager() {
     base44.entities.User.list().then(u => { setUsers(u); setLoading(false); });
   }, []);
 
-  const handleRoleChange = async (user, newRole) => {
-    setSaving(user.id);
-    await base44.auth.updateMe && await base44.entities.User.update(user.id, { role: newRole });
-    setUsers(u => u.map(x => x.id === user.id ? { ...x, role: newRole } : x));
+  const handleRoleChange = async (u, newRole) => {
+    setSaving(u.id);
+    await base44.entities.User.update(u.id, { role: newRole });
+    setUsers(prev => prev.map(x => x.id === u.id ? { ...x, role: newRole } : x));
     setSaving(null);
   };
 
