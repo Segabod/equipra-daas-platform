@@ -413,24 +413,81 @@ export default function InsuranceClaims() {
                 <div className="text-sm mb-1" style={{ color: P.text }}>Incident Description</div>
                 <p className="text-sm p-3 rounded-xl" style={{ backgroundColor: P.bg, color: P.navy }}>{detailClaim.incident_description}</p>
               </div>
+              {detailClaim.requires_manager_approval && (
+                <div className="p-3 rounded-xl" style={{ backgroundColor: '#EDE9FE', border: '1px solid #C4B5FD' }}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <AlertCircle className="w-4 h-4" style={{ color: '#7C3AED' }} />
+                    <span className="text-xs font-semibold" style={{ color: '#7C3AED' }}>High-Value Claim — Manager Approval Required (≥ ₦500,000)</span>
+                  </div>
+                  {detailClaim.manager_approved !== undefined && detailClaim.manager_approval_date && (
+                    <p className="text-xs mt-1" style={{ color: '#5B21B6' }}>
+                      {detailClaim.manager_approved ? '✅ Approved' : '❌ Rejected'} by {detailClaim.manager_approved_by} on {new Date(detailClaim.manager_approval_date).toLocaleDateString()}
+                    </p>
+                  )}
+                  {detailClaim.manager_approval_notes && (
+                    <p className="text-xs mt-1 italic" style={{ color: '#6D28D9' }}>"{detailClaim.manager_approval_notes}"</p>
+                  )}
+                </div>
+              )}
               {detailClaim.rejection_reason && (
                 <div className="p-3 rounded-xl" style={{ backgroundColor: '#FEE2E2' }}>
                   <div className="text-xs font-semibold mb-1" style={{ color: '#DC2626' }}>Rejection Reason</div>
                   <p className="text-sm" style={{ color: '#7F1D1D' }}>{detailClaim.rejection_reason}</p>
                 </div>
               )}
-              {/* Status Actions (admin) */}
+
+              {/* Manager Approval Panel — shown when pending manager approval and user is manager/admin */}
+              {detailClaim.status === 'pending_manager_approval' && (user?.role === 'manager' || user?.role === 'admin') && (
+                <div className="p-4 rounded-xl space-y-3" style={{ backgroundColor: '#F5F3FF', border: '2px solid #7C3AED' }}>
+                  <div className="font-semibold text-sm" style={{ color: '#7C3AED' }}>Manager Approval Required</div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1.5" style={{ color: P.navy }}>Approval Notes</label>
+                    <textarea value={managerNotes} onChange={e => setManagerNotes(e.target.value)} rows={2} placeholder="Add notes (optional)..." className="w-full px-3 py-2 border-2 rounded-lg text-sm resize-none" style={{ borderColor: '#C4B5FD' }} />
+                  </div>
+                  {showRejectInput && (
+                    <div>
+                      <label className="block text-xs font-semibold mb-1.5" style={{ color: '#DC2626' }}>Rejection Reason *</label>
+                      <textarea value={rejectionReason} onChange={e => setRejectionReason(e.target.value)} rows={2} placeholder="Required for rejection..." className="w-full px-3 py-2 border-2 rounded-lg text-sm resize-none" style={{ borderColor: '#FECACA' }} />
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <button onClick={() => handleManagerApproval(detailClaim, true)} className="flex-1 py-2 rounded-lg text-sm font-semibold text-white" style={{ backgroundColor: '#10B981' }}>
+                      ✅ Approve
+                    </button>
+                    {!showRejectInput ? (
+                      <button onClick={() => setShowRejectInput(true)} className="flex-1 py-2 rounded-lg text-sm font-semibold text-white" style={{ backgroundColor: '#EF4444' }}>
+                        ❌ Reject
+                      </button>
+                    ) : (
+                      <button onClick={() => handleManagerApproval(detailClaim, false)} disabled={!rejectionReason.trim()} className="flex-1 py-2 rounded-lg text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#EF4444' }}>
+                        Confirm Reject
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Status Actions */}
               <div>
                 <div className="text-sm font-semibold mb-2" style={{ color: P.navy }}>Update Status</div>
                 <div className="flex flex-wrap gap-2">
-                  {['submitted', 'under_review', 'approved', 'rejected', 'paid', 'withdrawn'].map(st => (
-                    <button key={st} onClick={() => handleStatusUpdate(detailClaim, st)}
-                      className="px-3 py-1.5 rounded-lg text-xs font-semibold capitalize"
-                      style={{ backgroundColor: detailClaim.status === st ? P.teal : P.bg, color: detailClaim.status === st ? 'white' : P.text }}>
-                      {STATUS_CONFIG[st]?.label}
-                    </button>
-                  ))}
+                  {['submitted', 'under_review', 'approved', 'rejected', 'paid', 'withdrawn'].map(st => {
+                    const blockedApprove = st === 'approved' && detailClaim.requires_manager_approval && !detailClaim.manager_approved;
+                    return (
+                      <button key={st} onClick={() => handleStatusUpdate(detailClaim, st)}
+                        title={blockedApprove ? 'Requires manager approval first' : ''}
+                        className="px-3 py-1.5 rounded-lg text-xs font-semibold capitalize"
+                        style={{ backgroundColor: detailClaim.status === st ? P.teal : P.bg, color: detailClaim.status === st ? 'white' : blockedApprove ? '#9CA3AF' : P.text, cursor: blockedApprove ? 'not-allowed' : 'pointer' }}>
+                        {STATUS_CONFIG[st]?.label}{blockedApprove ? ' 🔒' : ''}
+                      </button>
+                    );
+                  })}
                 </div>
+                {detailClaim.requires_manager_approval && !detailClaim.manager_approved && detailClaim.status !== 'pending_manager_approval' && (
+                  <p className="text-xs mt-2" style={{ color: '#7C3AED' }}>
+                    💡 To approve this claim, set status to "Pending Mgr Approval" — a manager will then review it.
+                  </p>
+                )}
               </div>
             </div>
           </div>
