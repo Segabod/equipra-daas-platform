@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { FileText, Filter, ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Package, Eye, X } from 'lucide-react';
+import { logAudit } from '../components/audit';
 
 const P = { navy: '#0B1F3A', teal: '#0FA3B1', gold: '#D4AF37', bg: '#F7F9FC', text: '#2E3440', border: '#E1E6EF' };
 
@@ -41,6 +42,7 @@ export default function RequestHistory() {
     setApproving(req.id);
     const newStatus = action === 'approve' ? 'approved' : 'rejected';
     await base44.entities.DeviceRequest.update(req.id, { status: newStatus });
+    await logAudit({ action: action === 'approve' ? 'approve' : 'reject', entityType: 'DeviceRequest', entityId: req.id, entityLabel: `REQ-${req.id?.slice(-4)?.toUpperCase()}`, details: `Request ${newStatus}`, oldValue: req.status, newValue: newStatus });
     await base44.entities.Notification.create({
       user_email: req.created_by || 'admin',
       title: `Request ${newStatus === 'approved' ? 'Approved ✅' : 'Rejected ❌'}`,
