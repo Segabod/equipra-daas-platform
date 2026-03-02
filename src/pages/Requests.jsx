@@ -249,7 +249,8 @@ export default function Requests() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-8">
+          <div className="flex gap-6">
+          <div className="flex-1 bg-white rounded-xl shadow-sm p-8">
             {success && (
               <div className="text-center py-10">
                 <CheckCircle className="w-14 h-14 mx-auto mb-4 text-green-500" />
