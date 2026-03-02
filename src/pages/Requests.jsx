@@ -450,12 +450,12 @@ export default function Requests() {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-2xl font-bold mb-1" style={{ color: P.navy }}>Review & Submit</h2>
-                  <p style={{ color: P.text }}>Confirm your request details</p>
+                  <p style={{ color: P.text }}>Confirm your request details before sending for approval</p>
                 </div>
                 {[
                   { title: 'Request Info', items: [['Type', REQUEST_TYPES.find(r=>r.value===form.requestType)?.label], ['Quantity', form.quantity], ['Location', form.deliveryLocation], ['Department', form.costCenter], ['Approver', form.approver], ['Required Date', form.requiredDate || '—']] },
                   { title: 'Device', items: [['Class', DEVICE_CLASSES.find(d=>d.value===form.deviceClass)?.label], ['Brand', form.brand||'Any'], ['Processor', form.processor||'Any'], ['RAM', form.ram||'Any'], ['Storage', form.storage||'Any'], ['OS', form.os||'Any']] },
-                  { title: 'Service', items: [['Bundle', SERVICE_BUNDLES.find(b=>b.value===form.serviceBundle)?.label], ['Accessories', form.accessories.join(', ') || 'None']] },
+                  { title: 'Service', items: [['Bundle', SERVICE_BUNDLES.find(b=>b.value===form.serviceBundle)?.label], ['Accessories', form.accessories.filter(a=>PAID_ACCESSORIES.find(p=>p.name===a)).join(', ') || 'None']] },
                 ].map(section => (
                   <div key={section.title} className="p-5 rounded-xl" style={{ backgroundColor: P.bg }}>
                     <h3 className="font-bold mb-3" style={{ color: P.navy }}>{section.title}</h3>
@@ -469,6 +469,53 @@ export default function Requests() {
                     </div>
                   </div>
                 ))}
+                {/* Cost Breakdown */}
+                {(() => {
+                  const { classPrice, bundlePrice, accessoryPrice, perDevice, subtotal, vat, total } = calcTotal(form);
+                  const selectedAcc = PAID_ACCESSORIES.filter(a => form.accessories.includes(a.name));
+                  return (
+                    <div className="rounded-xl p-5" style={{ backgroundColor: '#0B1F3A' }}>
+                      <h3 className="font-bold mb-4 text-white">Total Cost Estimate</h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between text-white/70">
+                          <span>Device ({DEVICE_CLASSES.find(d=>d.value===form.deviceClass)?.label})</span>
+                          <span className="text-white">₦{classPrice.toLocaleString()}/mo</span>
+                        </div>
+                        {bundlePrice > 0 && (
+                          <div className="flex justify-between text-white/70">
+                            <span>SLA Bundle ({SERVICE_BUNDLES.find(b=>b.value===form.serviceBundle)?.label})</span>
+                            <span className="text-white">+₦{bundlePrice.toLocaleString()}/mo</span>
+                          </div>
+                        )}
+                        {selectedAcc.map(a => (
+                          <div key={a.name} className="flex justify-between text-white/60 text-xs">
+                            <span>{a.name}</span>
+                            <span style={{ color: '#D4AF37' }}>+₦{a.price.toLocaleString()}/mo</span>
+                          </div>
+                        ))}
+                        <div className="flex justify-between text-white/70 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+                          <span>Per device/mo</span>
+                          <span className="text-white font-semibold">₦{perDevice.toLocaleString()}</span>
+                        </div>
+                        {form.quantity > 1 && (
+                          <div className="flex justify-between text-white/70">
+                            <span>× {form.quantity} devices</span>
+                            <span className="text-white">₦{subtotal.toLocaleString()}/mo</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between text-white/60 text-xs">
+                          <span>VAT (7.5%)</span>
+                          <span>₦{vat.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                        </div>
+                        <div className="flex justify-between pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.25)' }}>
+                          <span className="font-bold text-white text-base">Monthly Total</span>
+                          <span className="text-2xl font-black" style={{ color: '#D4AF37' }}>₦{total.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                        </div>
+                      </div>
+                      <p className="text-xs mt-3" style={{ color: 'rgba(255,255,255,0.4)' }}>This estimate will appear on your invoice after approval.</p>
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
