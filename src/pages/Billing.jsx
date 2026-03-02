@@ -98,10 +98,21 @@ export default function Billing() {
               <button className="px-4 py-2 rounded-lg border-2 text-sm font-medium" style={{ borderColor: P.border, color: P.navy }}>
                 <Download className="w-4 h-4 inline mr-1.5" />Download PDF
               </button>
-              {inv.status === 'pending' && (
-                <button className="px-4 py-2 rounded-lg text-sm font-semibold text-white" style={{ backgroundColor: P.teal }}>
-                  Pay Now
+              {(inv.status === 'pending' && !paidInvoices.includes(inv.id)) && (
+                <button
+                  onClick={() => handlePayNow(inv)}
+                  disabled={payingId === inv.id}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2 disabled:opacity-60"
+                  style={{ backgroundColor: P.teal }}
+                >
+                  <CreditCard className="w-4 h-4" />
+                  {payingId === inv.id ? 'Redirecting...' : 'Pay Now'}
                 </button>
+              )}
+              {paidInvoices.includes(inv.id) && (
+                <span className="px-4 py-2 rounded-lg text-sm font-semibold bg-green-100 text-green-700 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />Payment Received
+                </span>
               )}
             </div>
           </div>
