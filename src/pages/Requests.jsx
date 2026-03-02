@@ -61,7 +61,25 @@ export default function Requests() {
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    await base44.entities.DeviceRequest.create({ ...form, status: 'pending_approval' });
+    await base44.entities.DeviceRequest.create({
+      request_type: form.requestType,
+      quantity: form.quantity,
+      delivery_location: form.deliveryLocation,
+      required_date: form.requiredDate,
+      cost_center: form.costCenter,
+      approver: form.approver,
+      device_class: form.deviceClass,
+      brand: form.brand,
+      processor: form.processor,
+      ram: form.ram,
+      storage: form.storage,
+      screen_size: form.screenSize,
+      os: form.os,
+      accessories: form.accessories,
+      service_bundle: form.serviceBundle,
+      notes: form.notes,
+      status: 'pending_approval',
+    });
     const updated = await base44.entities.DeviceRequest.list('-created_date', 50);
     setRequests(updated);
     setSuccess(true);
