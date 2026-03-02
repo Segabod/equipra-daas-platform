@@ -519,12 +519,13 @@ export default function InsuranceClaims() {
 
             <div className="p-5 space-y-4 overflow-y-auto flex-1">
               {detailTab === 'details' ? (
-              <div className="flex items-center justify-between">
-                <span className="text-sm" style={{ color: P.text }}>Status</span>
-                <span className="px-3 py-1 rounded-full text-sm font-semibold" style={{ backgroundColor: STATUS_CONFIG[detailClaim.status]?.bg, color: STATUS_CONFIG[detailClaim.status]?.color }}>
-                  {STATUS_CONFIG[detailClaim.status]?.label}
-                </span>
-              </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm" style={{ color: P.text }}>Status</span>
+                    <span className="px-3 py-1 rounded-full text-sm font-semibold" style={{ backgroundColor: STATUS_CONFIG[detailClaim.status]?.bg, color: STATUS_CONFIG[detailClaim.status]?.color }}>
+                      {STATUS_CONFIG[detailClaim.status]?.label}
+                    </span>
+                  </div>
               {[
                 ['Incident Type', INCIDENT_TYPES.find(i => i.value === detailClaim.incident_type)?.label],
                 ['Incident Date', detailClaim.incident_date ? new Date(detailClaim.incident_date).toLocaleDateString() : '—'],
