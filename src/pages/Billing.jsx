@@ -286,6 +286,67 @@ export default function Billing() {
           ))}
         </div>
 
+        {/* Pending Request Costs */}
+        {pendingRequests.length > 0 && (
+          <div className="mb-8 bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="p-6" style={{ borderBottom: `1px solid ${P.border}` }}>
+              <h2 className="text-lg font-bold" style={{ color: P.navy }}>Approved Requests — Cost Preview</h2>
+              <p className="text-sm mt-0.5" style={{ color: P.text }}>Approved device requests pending billing. These will appear on your next invoice.</p>
+            </div>
+            <div className="divide-y" style={{ borderColor: P.border }}>
+              {pendingRequests.map(req => (
+                <div key={req.id}>
+                  <div className="p-5 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => setExpandedRequest(expandedRequest === req.id ? null : req.id)}>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#0B1F3A' }}>
+                        <Package className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm" style={{ color: P.navy }}>
+                          REQ-{req.id?.slice(-4)?.toUpperCase()} — {req.quantity}× {req.device_class?.charAt(0).toUpperCase() + req.device_class?.slice(1)} Device
+                        </div>
+                        <div className="text-xs" style={{ color: P.text }}>{req.delivery_location} · {req.cost_center}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <div className="text-xs" style={{ color: P.text }}>Est. Monthly</div>
+                        <div className="text-xl font-black" style={{ color: '#D4AF37' }}>₦{req.estimated_monthly_cost.toLocaleString()}</div>
+                      </div>
+                      <span className="px-2 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: '#D1FAE5', color: '#059669' }}>Approved</span>
+                    </div>
+                  </div>
+                  {expandedRequest === req.id && (
+                    <div className="px-5 pb-5">
+                      <div className="rounded-xl p-4 text-sm grid grid-cols-2 gap-3" style={{ backgroundColor: P.bg }}>
+                        {[
+                          ['Brand', req.brand || 'Any'], ['Processor', req.processor || 'Any'],
+                          ['RAM', req.ram || 'Any'], ['Storage', req.storage || 'Any'],
+                          ['Service Bundle', req.service_bundle], ['Required Date', req.required_date || '—'],
+                          ['Approver', req.approver], ['Notes', req.notes || '—'],
+                        ].map(([l, v]) => (
+                          <div key={l}>
+                            <div className="text-xs" style={{ color: P.text }}>{l}</div>
+                            <div className="font-semibold" style={{ color: P.navy }}>{v}</div>
+                          </div>
+                        ))}
+                        {req.accessories?.length > 0 && (
+                          <div className="col-span-2">
+                            <div className="text-xs mb-1" style={{ color: P.text }}>Accessories</div>
+                            <div className="flex flex-wrap gap-1">
+                              {req.accessories.map(a => <span key={a} className="px-2 py-0.5 rounded text-xs" style={{ backgroundColor: P.border, color: P.navy }}>{a}</span>)}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="p-6" style={{ borderBottom: `1px solid ${P.border}` }}>
             <h2 className="text-lg font-bold" style={{ color: P.navy }}>Invoice History</h2>
