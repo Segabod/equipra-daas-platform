@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, CheckCircle2, Clock, BarChart3 } from 'lucide-react';
+import { CreditCard, CheckCircle2, Clock, BarChart3, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import PaymentCheckout from '../components/PaymentCheckout';
 import { Button } from '@/components/ui/button';
@@ -11,10 +11,24 @@ export default function Payments() {
   const [paymentMode, setPaymentMode] = useState('subscription'); // 'subscription' or 'custom'
   const [customAmount, setCustomAmount] = useState('');
   const [selectedPlan, setSelectedPlan] = useState('premium');
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
+
+  // Verify payment on success page
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    const subscriptionId = urlParams.get('subscription_id');
+
+    if ((sessionId || subscriptionId) && !verifyingPayment) {
+      setVerifyingPayment(true);
+      base44.functions.invoke('verifyPayment', { sessionId, subscriptionId })
+        .catch(err => console.error('Payment verification failed:', err));
+    }
+  }, [verifyingPayment]);
 
   const plans = [
     {
