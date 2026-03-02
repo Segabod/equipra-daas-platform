@@ -38,6 +38,42 @@ const INVOICES = [
 
 export default function Billing() {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [payingId, setPayingId] = useState(null);
+  const [paidInvoices, setPaidInvoices] = useState([]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      const inv = params.get('invoice');
+      if (inv) setPaidInvoices(prev => [...prev, inv]);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
+  const handlePayNow = async (inv) => {
+    const isIframe = window.self !== window.top;
+    if (isIframe) {
+      alert('Payment only works from the published app. Please open the app in a new tab.');
+      return;
+    }
+    setPayingId(inv.id);
+    const subtotal = inv.devices.reduce((sum, d) => sum + (d.rate * d.days / 30), 0);
+    const creditsTotal = inv.credits.reduce((sum, c) => sum + c.amount, 0);
+    const vat = (subtotal + creditsTotal) * 0.075;
+    const total = Math.round(subtotal + creditsTotal + vat);
+
+    const response = await base44.functions.invoke('createInvoiceCheckout', {
+      invoiceId: inv.id,
+      amount: total,
+      description: `${inv.month} DaaS Subscription — ${inv.id}`,
+    });
+    setPayingId(null);
+    if (response.data?.url) {
+      window.location.href = response.data.url;
+    } else {
+      alert('Payment failed: ' + (response.data?.error || 'Unknown error'));
+    }
+  };
 
   if (selectedInvoice) {
     const inv = selectedInvoice;
