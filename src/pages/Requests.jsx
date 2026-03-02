@@ -694,7 +694,7 @@ export default function Requests() {
               </thead>
               <tbody>
                 {requests.map((r, i) => (
-                  <tr key={r.id} className="hover:bg-gray-50 transition-colors" style={{ borderBottom: i < requests.length-1 ? `1px solid ${P.border}` : 'none' }}>
+                  <tr key={r.id} className="hover:bg-gray-50 transition-colors cursor-pointer" style={{ borderBottom: i < requests.length-1 ? `1px solid ${P.border}` : 'none' }} onClick={() => setSelectedRequest(r)}>
                     <td className="px-6 py-4 font-mono font-bold text-xs" style={{ color: P.teal }}>REQ-{r.id?.slice(-4)?.toUpperCase()}</td>
                     <td className="px-6 py-4 text-sm" style={{ color: P.navy }}>{REQUEST_TYPES.find(t=>t.value===r.request_type)?.label || r.request_type}</td>
                     <td className="px-6 py-4 text-sm font-semibold" style={{ color: P.navy }}>{r.quantity}</td>
