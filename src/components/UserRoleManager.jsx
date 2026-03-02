@@ -38,7 +38,7 @@ export default function UserRoleManager() {
   const handleInvite = async () => {
     if (!inviteEmail) return;
     setInviting(true);
-    await base44.users.inviteUser(inviteEmail, inviteRole === 'admin' || inviteRole === 'it_admin' ? 'admin' : 'user');
+    await base44.users.inviteUser(inviteEmail, inviteRole === 'admin' ? 'admin' : 'user');
     setInviteSuccess(true);
     setInviteEmail('');
     setTimeout(() => setInviteSuccess(false), 3000);
