@@ -91,7 +91,44 @@ export default function Layout({ children, currentPageName }) {
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center space-x-1">
               {NAV_ITEMS.map((item) => {
-                const active = currentPageName === item.page;
+                const active = item.page && currentPageName === item.page;
+                const hasSubmenu = item.submenu && item.submenu.length > 0;
+                const Icon = item.icon || (hasSubmenu ? ChevronDown : null);
+                
+                if (hasSubmenu) {
+                  const visibleSubmenu = item.submenu.filter(sub => sub.roles.includes(userRole));
+                  if (visibleSubmenu.length === 0) return null;
+                  
+                  return (
+                    <div key={item.label} className="relative group">
+                      <button
+                        className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium nav-link hover:bg-gray-100 transition-colors"
+                        style={{ color: '#2E3440' }}
+                      >
+                        {Icon && <Icon className="w-4 h-4" />}
+                        <span>{item.label}</span>
+                        <ChevronDown className="w-3 h-3 group-hover:rotate-180 transition-transform" />
+                      </button>
+                      <div className="absolute left-0 mt-0 w-48 bg-white rounded-lg shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-40" style={{ borderColor: '#E1E6EF' }}>
+                        {visibleSubmenu.map((sub, idx) => (
+                          <Link
+                            key={idx}
+                            to={createPageUrl(sub.page)}
+                            className="block px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                            style={{
+                              color: currentPageName === sub.page ? '#0FA3B1' : '#2E3440',
+                              fontWeight: currentPageName === sub.page ? '600' : '500',
+                              borderBottom: idx < visibleSubmenu.length - 1 ? '1px solid #E1E6EF' : 'none'
+                            }}
+                          >
+                            {sub.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                
                 return (
                   <Link
                     key={item.page}
@@ -102,7 +139,7 @@ export default function Layout({ children, currentPageName }) {
                       color: active ? 'white' : '#2E3440',
                     }}
                   >
-                    <item.icon className="w-4 h-4" />
+                    {Icon && <Icon className="w-4 h-4" />}
                     <span>{item.label}</span>
                   </Link>
                 );
