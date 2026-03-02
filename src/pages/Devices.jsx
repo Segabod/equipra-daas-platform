@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Monitor, Search, Package, CheckCircle, AlertCircle, RefreshCw, XCircle, Shield, Cpu, Eye, Plus, Pencil, Trash2, X, Save, UserPlus, UserMinus, CheckSquare, Square, MapPin } from 'lucide-react';
+import { Monitor, Search, Package, CheckCircle, AlertCircle, RefreshCw, XCircle, Cpu, Eye, Plus, Pencil, Trash2, X, Save, UserPlus, UserMinus, CheckSquare, Square } from 'lucide-react';
 import AssignDeviceModal from '../components/AssignDeviceModal';
 import LifecyclePanel from '../components/LifecyclePanel';
 import { logAudit } from '../components/audit';
