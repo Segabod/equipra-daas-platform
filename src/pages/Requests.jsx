@@ -554,9 +554,9 @@ export default function Requests() {
               </div>
             </div>
           )}
-          </div>{/* end flex row */}
-        </div>{/* end max-w container */}
-      </div>{/* end min-h-screen */}
+          </div>
+        </div>
+      </div>
     );
   }
 
