@@ -27,13 +27,63 @@ const SERVICE_BUNDLES = [
 const LOCATIONS = ['Lagos HQ - Victoria Island', 'Abuja Office - Maitama', 'Port Harcourt Office', 'Ibadan Branch'];
 const DEPARTMENTS = ['Information Technology', 'Finance', 'Human Resources', 'Sales & Marketing', 'Operations'];
 const APPROVERS = ['Amaka Okafor - CFO', 'Bola Adebayo - Head of HR', 'Chidi Nwosu - IT Manager'];
-const BRANDS = ['Dell', 'HP', 'Lenovo', 'Apple'];
-const PROCESSORS = ['Intel Core i5 (12th Gen)', 'Intel Core i7 (12th Gen)', 'AMD Ryzen 5', 'AMD Ryzen 7', 'Apple M2', 'Apple M3'];
-const RAMS = ['8GB', '16GB', '32GB'];
-const STORAGES = ['256GB SSD', '512GB SSD', '1TB SSD'];
-const SCREENS = ['13"', '14"', '15"', '16"'];
-const OS_LIST = ['Windows 11 Pro', 'macOS'];
-const ACCESSORIES = ['Wireless Mouse', 'Laptop Bag', 'USB-C Dock', 'External Monitor (24")', 'Webcam', 'Headset'];
+const DEVICE_TYPES = [
+  { value: 'laptop', label: 'Laptop' },
+  { value: 'desktop', label: 'Desktop PC' },
+  { value: 'aio', label: 'All-in-One' },
+  { value: 'monitor', label: 'Screen Monitor' },
+];
+
+const LAPTOP_MODELS = [
+  'Dell Latitude 5540', 'Dell Latitude 7440', 'Dell XPS 13', 'Dell XPS 15', 'Dell Precision 5570',
+  'HP EliteBook 840 G10', 'HP EliteBook 860 G10', 'HP ProBook 450 G10', 'HP ZBook Firefly 14',
+  'Lenovo ThinkPad X1 Carbon', 'Lenovo ThinkPad T14', 'Lenovo ThinkPad E14', 'Lenovo IdeaPad Slim 5',
+  'Apple MacBook Air 13" M3', 'Apple MacBook Air 15" M3', 'Apple MacBook Pro 14" M3', 'Apple MacBook Pro 16" M3',
+  'Microsoft Surface Pro 10', 'Microsoft Surface Laptop 6',
+  'Asus ExpertBook B9', 'Asus ProArt Studiobook',
+];
+const DESKTOP_MODELS = [
+  'Dell OptiPlex 7010', 'Dell OptiPlex 7000 SFF', 'Dell Precision Tower 3660',
+  'HP EliteDesk 800 G9', 'HP ProDesk 400 G9', 'HP Z2 Tower G9',
+  'Lenovo ThinkCentre M70t', 'Lenovo ThinkCentre M90t', 'Lenovo ThinkStation P360',
+  'Apple Mac mini M4', 'Apple Mac Pro M2',
+];
+const AIO_MODELS = [
+  'Dell OptiPlex All-in-One 7410', 'HP EliteOne 840 G9 AiO', 'Lenovo ThinkCentre M90a',
+  'Apple iMac 24" M4', 'Asus Vivo AiO V241',
+];
+const MONITOR_MODELS = [
+  'Dell P2423D 24" QHD', 'Dell U2722D 27" 4K', 'Dell U3223QE 32" 4K',
+  'HP E24 G5 24" FHD', 'HP Z27u G3 27" 4K',
+  'LG UltraFine 27" 4K', 'LG UltraWide 34" WQHD',
+  'Samsung 27" FHD Curved', 'Samsung 32" 4K Smart Monitor',
+  'ViewSonic VP2756-4K 27"',
+];
+
+const BRANDS = ['Dell', 'HP', 'Lenovo', 'Apple', 'Microsoft', 'Asus', 'LG', 'Samsung', 'ViewSonic'];
+const PROCESSORS = ['Intel Core i5 (12th Gen)', 'Intel Core i5 (13th Gen)', 'Intel Core i7 (12th Gen)', 'Intel Core i7 (13th Gen)', 'Intel Core i9 (13th Gen)', 'AMD Ryzen 5 7600', 'AMD Ryzen 7 7800X', 'Apple M3', 'Apple M3 Pro', 'Apple M3 Max', 'Apple M4'];
+const RAMS = ['8GB', '16GB', '32GB', '64GB'];
+const STORAGES = ['256GB SSD', '512GB SSD', '1TB SSD', '2TB SSD'];
+const SCREENS = ['13"', '14"', '15"', '16"', '24"', '27"', '32"', '34"'];
+const OS_LIST = ['Windows 11 Pro', 'Windows 11 Home', 'macOS', 'Ubuntu 22.04 LTS', 'Chrome OS'];
+
+// Paid accessories with pricing
+const PAID_ACCESSORIES = [
+  { name: 'External Monitor (24" FHD)', price: 75000 },
+  { name: 'External Monitor (27" 4K)', price: 120000 },
+  { name: 'USB-C Docking Station', price: 55000 },
+  { name: 'Thunderbolt 4 Hub', price: 45000 },
+  { name: 'Wireless Keyboard & Mouse', price: 25000 },
+  { name: 'Ergonomic Wireless Mouse', price: 15000 },
+  { name: 'Laptop Bag / Backpack', price: 12000 },
+  { name: 'Executive Laptop Sleeve', price: 8000 },
+  { name: 'HD Webcam (1080p)', price: 35000 },
+  { name: 'Noise-Cancelling Headset', price: 65000 },
+  { name: 'USB-C Adapter (Multi-port)', price: 18000 },
+  { name: 'External SSD (1TB)', price: 70000 },
+];
+const FREE_ACCESSORIES = ['Power Adapter', 'Device Warranty Card'];
+const ACCESSORIES = [...PAID_ACCESSORIES.map(a => a.name), ...FREE_ACCESSORIES];
 
 const STEPS = ['Request Info', 'Device Class', 'Specifications', 'Service Bundle', 'Review'];
 
