@@ -285,6 +285,21 @@ export default function Layout({ children, currentPageName }) {
       {/* Page Content */}
       <main>{children}</main>
 
+      {/* Chat Button */}
+      {!chatOpen && (
+        <button
+          onClick={() => setChatOpen(true)}
+          className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg text-white flex items-center justify-center hover:shadow-xl transition-shadow z-40"
+          style={{ backgroundColor: '#0FA3B1' }}
+          title="Open support chat"
+        >
+          <MessageCircle className="w-6 h-6" />
+        </button>
+      )}
+
+      {/* Chat Interface */}
+      <ChatInterface isOpen={chatOpen} onClose={() => setChatOpen(false)} />
+
       <Footer />
     </div>
   );
