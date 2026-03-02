@@ -62,16 +62,26 @@ export default function Payments() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: P.bg }}>
         <div className="bg-white rounded-2xl shadow-lg p-12 max-w-md text-center">
-          <CheckCircle2 className="w-16 h-16 mx-auto mb-4" style={{ color: '#10B981' }} />
-          <h1 className="text-2xl font-bold mb-2" style={{ color: P.navy }}>Payment Successful!</h1>
-          <p style={{ color: P.text }}>Your payment has been processed successfully. A confirmation email has been sent to you.</p>
-          <Button 
-            className="mt-6 w-full text-white"
-            style={{ backgroundColor: P.teal }}
-            onClick={() => window.location.href = '/Dashboard'}
-          >
-            Return to Dashboard
-          </Button>
+          {verifyingPayment ? (
+            <>
+              <Loader2 className="w-16 h-16 mx-auto mb-4 animate-spin" style={{ color: P.teal }} />
+              <h1 className="text-2xl font-bold mb-2" style={{ color: P.navy }}>Processing Payment</h1>
+              <p style={{ color: P.text }}>Verifying your payment and updating invoice...</p>
+            </>
+          ) : (
+            <>
+              <CheckCircle2 className="w-16 h-16 mx-auto mb-4" style={{ color: '#10B981' }} />
+              <h1 className="text-2xl font-bold mb-2" style={{ color: P.navy }}>Payment Successful!</h1>
+              <p style={{ color: P.text }}>Your payment has been processed successfully. Invoice has been marked as paid.</p>
+              <Button 
+                className="mt-6 w-full text-white"
+                style={{ backgroundColor: P.teal }}
+                onClick={() => window.location.href = '/Dashboard'}
+              >
+                Return to Dashboard
+              </Button>
+            </>
+          )}
         </div>
       </div>
     );
