@@ -60,6 +60,9 @@ export default function InsuranceClaims() {
   const [rejectionReason, setRejectionReason] = useState('');
   const [showRejectInput, setShowRejectInput] = useState(false);
   const [user, setUser] = useState(null);
+  const [uploadedDocs, setUploadedDocs] = useState([]); // [{label, file, url, uploading}]
+  const fileInputRef = useRef(null);
+  const [activeUploadLabel, setActiveUploadLabel] = useState(null);
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
   const [form, setForm] = useState({
