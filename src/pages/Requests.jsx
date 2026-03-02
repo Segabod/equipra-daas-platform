@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Package, Check, ChevronRight, ChevronLeft, Plus, Minus, CheckCircle } from 'lucide-react';
+import { Package, Check, ChevronRight, ChevronLeft, Plus, Minus, CheckCircle, X } from 'lucide-react';
+import PaymentCheckout from '../components/PaymentCheckout';
 
 const P = { navy: '#0B1F3A', teal: '#0FA3B1', gold: '#D4AF37', bg: '#F7F9FC', text: '#2E3440', border: '#E1E6EF' };
 
