@@ -189,18 +189,7 @@ export default function Layout({ children, currentPageName }) {
       {/* Page Content */}
       <main>{children}</main>
 
-      {/* Footer */}
-      <footer className="mt-16 py-8 px-4" style={{ backgroundColor: '#0B1F3A' }}>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between">
-          <div className="flex items-center space-x-2 mb-4 md:mb-0">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#0FA3B1' }}>
-              <Monitor className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-white font-bold">EquipraAfrica</span>
-          </div>
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>© 2026 EquipraAfrica DaaS Platform. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
