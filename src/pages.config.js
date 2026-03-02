@@ -54,6 +54,7 @@ import Devices from './pages/Devices';
 import Home from './pages/Home';
 import Requests from './pages/Requests';
 import Tickets from './pages/Tickets';
+import RequestHistory from './pages/RequestHistory';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +66,7 @@ export const PAGES = {
     "Home": Home,
     "Requests": Requests,
     "Tickets": Tickets,
+    "RequestHistory": RequestHistory,
 }
 
 export const pagesConfig = {
