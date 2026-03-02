@@ -34,38 +34,45 @@ const DEVICE_TYPES = [
   { value: 'monitor', label: 'Screen Monitor' },
 ];
 
-const LAPTOP_MODELS = [
-  'Dell Latitude 5540', 'Dell Latitude 7440', 'Dell XPS 13', 'Dell XPS 15', 'Dell Precision 5570',
-  'HP EliteBook 840 G10', 'HP EliteBook 860 G10', 'HP ProBook 450 G10', 'HP ZBook Firefly 14',
-  'Lenovo ThinkPad X1 Carbon', 'Lenovo ThinkPad T14', 'Lenovo ThinkPad E14', 'Lenovo IdeaPad Slim 5',
-  'Apple MacBook Air 13" M3', 'Apple MacBook Air 15" M3', 'Apple MacBook Pro 14" M3', 'Apple MacBook Pro 16" M3',
-  'Microsoft Surface Pro 10', 'Microsoft Surface Laptop 6',
-  'Asus ExpertBook B9', 'Asus ProArt Studiobook',
-];
-const DESKTOP_MODELS = [
-  'Dell OptiPlex 7010', 'Dell OptiPlex 7000 SFF', 'Dell Precision Tower 3660',
-  'HP EliteDesk 800 G9', 'HP ProDesk 400 G9', 'HP Z2 Tower G9',
-  'Lenovo ThinkCentre M70t', 'Lenovo ThinkCentre M90t', 'Lenovo ThinkStation P360',
-  'Apple Mac mini M4', 'Apple Mac Pro M2',
-];
-const AIO_MODELS = [
-  'Dell OptiPlex All-in-One 7410', 'HP EliteOne 840 G9 AiO', 'Lenovo ThinkCentre M90a',
-  'Apple iMac 24" M4', 'Asus Vivo AiO V241',
-];
-const MONITOR_MODELS = [
-  'Dell P2423D 24" QHD', 'Dell U2722D 27" 4K', 'Dell U3223QE 32" 4K',
-  'HP E24 G5 24" FHD', 'HP Z27u G3 27" 4K',
-  'LG UltraFine 27" 4K', 'LG UltraWide 34" WQHD',
-  'Samsung 27" FHD Curved', 'Samsung 32" 4K Smart Monitor',
-  'ViewSonic VP2756-4K 27"',
-];
-
-const BRANDS = ['Dell', 'HP', 'Lenovo', 'Apple', 'Microsoft', 'Asus', 'LG', 'Samsung', 'ViewSonic'];
-const PROCESSORS = ['Intel Core i5 (12th Gen)', 'Intel Core i5 (13th Gen)', 'Intel Core i7 (12th Gen)', 'Intel Core i7 (13th Gen)', 'Intel Core i9 (13th Gen)', 'AMD Ryzen 5 7600', 'AMD Ryzen 7 7800X', 'Apple M3', 'Apple M3 Pro', 'Apple M3 Max', 'Apple M4'];
-const RAMS = ['8GB', '16GB', '32GB', '64GB'];
-const STORAGES = ['256GB SSD', '512GB SSD', '1TB SSD', '2TB SSD'];
-const SCREENS = ['13"', '14"', '15"', '16"', '24"', '27"', '32"', '34"'];
-const OS_LIST = ['Windows 11 Pro', 'Windows 11 Home', 'macOS', 'Ubuntu 22.04 LTS', 'Chrome OS'];
+// Device specs by class
+const DEVICE_SPECS_BY_CLASS = {
+  standard: {
+    laptopModels: ['Dell Latitude 5540', 'HP EliteBook 840 G10', 'Lenovo ThinkPad E14', 'Lenovo IdeaPad Slim 5', 'Microsoft Surface Laptop 6'],
+    desktopModels: ['Dell OptiPlex 7010', 'HP ProDesk 400 G9', 'Lenovo ThinkCentre M70t'],
+    aioModels: ['Dell OptiPlex All-in-One 7410', 'HP EliteOne 840 G9 AiO', 'Lenovo ThinkCentre M90a'],
+    monitorModels: ['Dell P2423D 24" QHD', 'HP E24 G5 24" FHD', 'Samsung 27" FHD Curved'],
+    brands: ['Dell', 'HP', 'Lenovo', 'Microsoft'],
+    processors: ['Intel Core i5 (12th Gen)', 'Intel Core i5 (13th Gen)'],
+    rams: ['8GB'],
+    storages: ['256GB SSD'],
+    screens: ['13"', '14"', '15"', '24"'],
+    os: ['Windows 11 Home', 'Windows 11 Pro'],
+  },
+  developer: {
+    laptopModels: ['Dell Latitude 7440', 'Dell XPS 13', 'HP EliteBook 860 G10', 'Lenovo ThinkPad T14', 'Lenovo ThinkPad X1 Carbon', 'Microsoft Surface Laptop 6'],
+    desktopModels: ['Dell OptiPlex 7000 SFF', 'Dell Precision Tower 3660', 'HP EliteDesk 800 G9', 'HP Z2 Tower G9', 'Lenovo ThinkCentre M90t', 'Lenovo ThinkStation P360'],
+    aioModels: ['HP EliteOne 840 G9 AiO', 'Lenovo ThinkCentre M90a'],
+    monitorModels: ['Dell P2423D 24" QHD', 'Dell U2722D 27" 4K', 'HP Z27u G3 27" 4K', 'LG UltraFine 27" 4K', 'Samsung 27" FHD Curved'],
+    brands: ['Dell', 'HP', 'Lenovo', 'Microsoft', 'Asus'],
+    processors: ['Intel Core i7 (12th Gen)', 'Intel Core i7 (13th Gen)', 'AMD Ryzen 5 7600', 'AMD Ryzen 7 7800X'],
+    rams: ['16GB', '32GB'],
+    storages: ['512GB SSD', '1TB SSD'],
+    screens: ['13"', '14"', '15"', '16"', '24"', '27"'],
+    os: ['Windows 11 Pro', 'Windows 11 Home', 'Ubuntu 22.04 LTS', 'Chrome OS'],
+  },
+  executive: {
+    laptopModels: ['Dell XPS 15', 'Dell Precision 5570', 'HP ZBook Firefly 14', 'Lenovo ThinkPad X1 Carbon', 'Apple MacBook Air 13" M3', 'Apple MacBook Air 15" M3', 'Apple MacBook Pro 14" M3', 'Apple MacBook Pro 16" M3', 'Asus ExpertBook B9', 'Asus ProArt Studiobook'],
+    desktopModels: ['Dell Precision Tower 3660', 'HP Z2 Tower G9', 'Lenovo ThinkStation P360', 'Apple Mac mini M4', 'Apple Mac Pro M2'],
+    aioModels: ['Apple iMac 24" M4', 'Asus Vivo AiO V241'],
+    monitorModels: ['Dell U2722D 27" 4K', 'Dell U3223QE 32" 4K', 'HP Z27u G3 27" 4K', 'LG UltraFine 27" 4K', 'LG UltraWide 34" WQHD', 'Samsung 32" 4K Smart Monitor', 'ViewSonic VP2756-4K 27"'],
+    brands: ['Dell', 'HP', 'Lenovo', 'Apple', 'Microsoft', 'Asus', 'LG', 'Samsung', 'ViewSonic'],
+    processors: ['Intel Core i7 (13th Gen)', 'Intel Core i9 (13th Gen)', 'AMD Ryzen 7 7800X', 'Apple M3', 'Apple M3 Pro', 'Apple M3 Max', 'Apple M4'],
+    rams: ['32GB', '64GB'],
+    storages: ['1TB SSD', '2TB SSD'],
+    screens: ['14"', '15"', '16"', '24"', '27"', '32"', '34"'],
+    os: ['Windows 11 Pro', 'macOS', 'Ubuntu 22.04 LTS'],
+  },
+};
 
 // Paid accessories with pricing
 const PAID_ACCESSORIES = [
