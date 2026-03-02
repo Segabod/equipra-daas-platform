@@ -95,12 +95,40 @@ export default function Layout({ children, currentPageName }) {
             {/* Right */}
             <div className="hidden md:flex items-center space-x-3">
               <NotificationBell userEmail={user?.email} />
-              <div className="flex items-center space-x-2 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-50">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: '#0FA3B1' }}>
-                  {user?.full_name?.charAt(0) || 'U'}
-                </div>
-                <span className="text-sm font-medium" style={{ color: '#0B1F3A' }}>{user?.full_name || 'User'}</span>
-                <ChevronDown className="w-4 h-4" style={{ color: '#2E3440' }} />
+              <div id="profile-menu" className="relative">
+                <button
+                  onClick={() => setProfileOpen(o => !o)}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: '#0FA3B1' }}>
+                    {user?.full_name?.charAt(0) || 'U'}
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-medium" style={{ color: '#0B1F3A' }}>{user?.full_name || 'User'}</div>
+                    <div className="text-xs capitalize" style={{ color: '#0FA3B1' }}>{user?.role || 'user'}</div>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${profileOpen ? 'rotate-180' : ''}`} style={{ color: '#2E3440' }} />
+                </button>
+
+                {profileOpen && (
+                  <div className="absolute right-0 mt-1 w-56 bg-white rounded-xl shadow-lg border z-50 overflow-hidden" style={{ borderColor: '#E1E6EF' }}>
+                    <div className="px-4 py-3" style={{ borderBottom: '1px solid #E1E6EF' }}>
+                      <div className="text-sm font-semibold" style={{ color: '#0B1F3A' }}>{user?.full_name}</div>
+                      <div className="text-xs mt-0.5 truncate" style={{ color: '#6B7280' }}>{user?.email}</div>
+                      {user?.department && <div className="text-xs mt-0.5" style={{ color: '#0FA3B1' }}>{user.department}</div>}
+                    </div>
+                    <div className="py-1">
+                      <button
+                        onClick={() => { setProfileOpen(false); base44.auth.logout(); }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-red-50 transition-colors"
+                        style={{ color: '#EF4444' }}
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
