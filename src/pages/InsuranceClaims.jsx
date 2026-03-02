@@ -659,7 +659,7 @@ export default function InsuranceClaims() {
                     💡 To approve this claim, set status to "Pending Mgr Approval" — a manager will then review it.
                   </p>
                 )}
-                </div>
+              </div>
                 ) : (
                 <ClaimHistoryTimeline claimId={detailClaim.id} />
                 )}
