@@ -160,6 +160,25 @@ export default function Layout({ children, currentPageName }) {
                 </Link>
               );
             })}
+            <div className="pt-2 mt-2" style={{ borderTop: '1px solid #E1E6EF' }}>
+              <div className="flex items-center gap-3 px-3 py-2 mb-1">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: '#0FA3B1' }}>
+                  {user?.full_name?.charAt(0) || 'U'}
+                </div>
+                <div>
+                  <div className="text-sm font-semibold" style={{ color: '#0B1F3A' }}>{user?.full_name}</div>
+                  <div className="text-xs capitalize" style={{ color: '#0FA3B1' }}>{user?.role || 'user'}</div>
+                </div>
+              </div>
+              <button
+                onClick={() => base44.auth.logout()}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium"
+                style={{ color: '#EF4444' }}
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
+            </div>
           </div>
         )}
       </nav>
