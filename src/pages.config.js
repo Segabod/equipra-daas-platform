@@ -50,10 +50,12 @@
 import Admin from './pages/Admin';
 import Analytics from './pages/Analytics';
 import Billing from './pages/Billing';
+import ClaimsAnalytics from './pages/ClaimsAnalytics';
 import Dashboard from './pages/Dashboard';
 import DeviceHealth from './pages/DeviceHealth';
 import Devices from './pages/Devices';
 import Home from './pages/Home';
+import InsuranceClaims from './pages/InsuranceClaims';
 import Onboarding from './pages/Onboarding';
 import PredictiveMaintenance from './pages/PredictiveMaintenance';
 import Procurement from './pages/Procurement';
@@ -61,8 +63,6 @@ import Reports from './pages/Reports';
 import RequestHistory from './pages/RequestHistory';
 import Requests from './pages/Requests';
 import Tickets from './pages/Tickets';
-import InsuranceClaims from './pages/InsuranceClaims';
-import ClaimsAnalytics from './pages/ClaimsAnalytics';
 import __Layout from './Layout.jsx';
 
 
@@ -70,10 +70,12 @@ export const PAGES = {
     "Admin": Admin,
     "Analytics": Analytics,
     "Billing": Billing,
+    "ClaimsAnalytics": ClaimsAnalytics,
     "Dashboard": Dashboard,
     "DeviceHealth": DeviceHealth,
     "Devices": Devices,
     "Home": Home,
+    "InsuranceClaims": InsuranceClaims,
     "Onboarding": Onboarding,
     "PredictiveMaintenance": PredictiveMaintenance,
     "Procurement": Procurement,
@@ -81,8 +83,6 @@ export const PAGES = {
     "RequestHistory": RequestHistory,
     "Requests": Requests,
     "Tickets": Tickets,
-    "InsuranceClaims": InsuranceClaims,
-    "ClaimsAnalytics": ClaimsAnalytics,
 }
 
 export const pagesConfig = {

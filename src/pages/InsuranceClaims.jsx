@@ -567,8 +567,8 @@ export default function InsuranceClaims() {
                 </div>
               )}
 
-              {/* Manager Approval Panel — shown when pending manager approval and user is manager/admin */}
-              {detailClaim.status === 'pending_manager_approval' && (user?.role === 'manager' || user?.role === 'admin') && (
+              {/* Manager Approval Panel — shown when pending manager approval and user is manager/admin/claims_manager */}
+              {detailClaim.status === 'pending_manager_approval' && ['manager', 'admin', 'claims_manager'].includes(user?.role) && (
                 <div className="p-4 rounded-xl space-y-3" style={{ backgroundColor: '#F5F3FF', border: '2px solid #7C3AED' }}>
                   <div className="font-semibold text-sm" style={{ color: '#7C3AED' }}>Manager Approval Required</div>
                   <div>
