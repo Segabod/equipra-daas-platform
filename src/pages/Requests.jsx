@@ -127,17 +127,26 @@ function calcTotal(form, yearNumber = 1) {
   return { classPrice: depreciatedClassPrice, bundlePrice, accessoryPrice, perDevice, subtotal, vat, total: subtotal + vat, depreciationMultiplier, originalPrice: CLASS_PRICES[form.deviceClass] };
 }
 
-function CostSummary({ form }) {
-  const { classPrice, bundlePrice, accessoryPrice, perDevice, subtotal, vat, total } = calcTotal(form);
+function CostSummary({ form, yearNumber = 1 }) {
+  const { classPrice, bundlePrice, accessoryPrice, perDevice, subtotal, vat, total, depreciationMultiplier, originalPrice } = calcTotal(form, yearNumber);
   if (!form.deviceClass) return null;
   const selectedAccessories = PAID_ACCESSORIES.filter(a => form.accessories.includes(a.name));
+  
   return (
     <div className="rounded-xl p-5" style={{ backgroundColor: '#0B1F3A', color: 'white' }}>
-      <h4 className="text-sm font-bold mb-4" style={{ color: '#0FA3B1' }}>💰 Cost Preview</h4>
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-sm font-bold" style={{ color: '#0FA3B1' }}>💰 Cost Preview</h4>
+        {yearNumber > 1 && (
+          <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#10B981' }}>Year {yearNumber} ({Math.round(depreciationMultiplier * 100)}%)</span>
+        )}
+      </div>
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
           <span style={{ color: 'rgba(255,255,255,0.7)' }}>Device ({DEVICE_CLASSES.find(d=>d.value===form.deviceClass)?.label})</span>
-          <span>₦{classPrice.toLocaleString()}/mo</span>
+          <div className="flex items-center gap-2">
+            {yearNumber > 1 && <span style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'line-through' }}>₦{originalPrice?.toLocaleString()}</span>}
+            <span>₦{classPrice.toLocaleString()}/mo</span>
+          </div>
         </div>
         {bundlePrice > 0 && (
           <div className="flex justify-between">
