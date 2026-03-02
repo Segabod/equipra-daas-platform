@@ -85,7 +85,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4" style={{ color: PALETTE.navy }}>Everything Included</h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: PALETTE.text }}>One monthly subscription. Zero capital expenditure. Total peace of mind.</p>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: PALETTE.text }}>Monthly subscription. Zero capital expenditure. Total peace of mind.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {[
