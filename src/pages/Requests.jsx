@@ -203,6 +203,12 @@ export default function Requests() {
       type: 'request_submitted',
       link_page: 'RequestHistory',
     });
+    // Send email notifications (fire and forget)
+    base44.functions.invoke('sendRequestEmail', {
+      event: 'submitted',
+      requestData: { ...newRequest, created_by: user?.email },
+    }).catch(() => {});
+
     const updated = await base44.entities.DeviceRequest.list('-created_date', 50);
     setRequests(updated);
     setSuccess(true);
