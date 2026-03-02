@@ -12,9 +12,9 @@ const NAV_ITEMS = [
   { label: 'Requests', page: 'Requests', icon: FileText },
   { label: 'Req. History', page: 'RequestHistory', icon: BarChart3 },
   { label: 'Tickets', page: 'Tickets', icon: Wrench },
-  { label: 'Reports', page: 'Reports', icon: BarChart3 },
   { label: 'Health', page: 'DeviceHealth', icon: Activity },
-  { label: 'Billing', page: 'Billing', icon: BarChart3 },
+  { label: 'Procurement', page: 'Procurement', icon: BarChart3 },
+  { label: 'Analytics', page: 'Analytics', icon: BarChart3 },
   { label: 'Admin', page: 'Admin', icon: Settings },
 ];
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Monitor, Search, Package, CheckCircle, AlertCircle, RefreshCw, XCircle, Shield, Cpu, Eye, Plus, Pencil, Trash2, X, Save, UserPlus, UserMinus, CheckSquare, Square, MapPin } from 'lucide-react';
 import AssignDeviceModal from '../components/AssignDeviceModal';
+import LifecyclePanel from '../components/LifecyclePanel';
 import { logAudit } from '../components/audit';
 
 const P = { navy: '#0B1F3A', teal: '#0FA3B1', gold: '#D4AF37', bg: '#F7F9FC', text: '#2E3440', border: '#E1E6EF' };
@@ -363,16 +364,12 @@ export default function Devices() {
               </div>
             </div>
             <div className="space-y-6">
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-bold mb-4" style={{ color: P.navy }}>Lease & Coverage</h3>
-                <div className="space-y-4 text-sm">
-                  {selectedDevice.lease_start && <div><div className="text-xs mb-1" style={{ color: P.text }}>Lease Start</div><div className="font-medium" style={{ color: P.navy }}>{new Date(selectedDevice.lease_start).toLocaleDateString()}</div></div>}
-                  {selectedDevice.lease_end && <div><div className="text-xs mb-1" style={{ color: P.text }}>Lease End</div><div className="font-medium" style={{ color: P.navy }}>{new Date(selectedDevice.lease_end).toLocaleDateString()}</div></div>}
-                  {selectedDevice.refresh_date && <div><div className="text-xs mb-1" style={{ color: P.text }}>Refresh Due</div><div className="font-medium" style={{ color: days < 90 ? '#F59E0B' : P.navy }}>{new Date(selectedDevice.refresh_date).toLocaleDateString()} ({days} days)</div></div>}
-                  {selectedDevice.warranty && <div><div className="text-xs mb-1" style={{ color: P.text }}>Warranty</div><div className="font-medium text-green-600 flex items-center"><Shield className="w-3.5 h-3.5 mr-1" />{selectedDevice.warranty}</div></div>}
-                  {selectedDevice.insurance && <div><div className="text-xs mb-1" style={{ color: P.text }}>Insurance</div><div className="font-medium" style={{ color: P.navy }}>{selectedDevice.insurance}</div></div>}
-                </div>
-              </div>
+              <LifecyclePanel device={selectedDevice} onRefresh={async () => {
+                const updated = await base44.entities.Device.list('-created_date', 200);
+                setDevices(updated);
+                const refreshed = updated.find(d => d.id === selectedDevice.id);
+                if (refreshed) setSelectedDevice(refreshed);
+              }} />
             </div>
           </div>
         </div>
