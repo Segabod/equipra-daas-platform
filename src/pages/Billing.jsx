@@ -305,9 +305,25 @@ export default function Billing() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <button onClick={() => setSelectedInvoice(inv)} className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ backgroundColor: P.teal }}>
-                      <Eye className="w-3.5 h-3.5 inline mr-1" />View
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setSelectedInvoice(inv)} className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ backgroundColor: P.teal }}>
+                        <Eye className="w-3.5 h-3.5 inline mr-1" />View
+                      </button>
+                      {(inv.status === 'pending' && !paidInvoices.includes(inv.id)) && (
+                        <button
+                          onClick={() => handlePayNow(inv)}
+                          disabled={payingId === inv.id}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white flex items-center gap-1.5 disabled:opacity-60"
+                          style={{ backgroundColor: '#10B981' }}
+                        >
+                          <CreditCard className="w-3.5 h-3.5" />
+                          {payingId === inv.id ? '...' : 'Pay Now'}
+                        </button>
+                      )}
+                      {paidInvoices.includes(inv.id) && (
+                        <span className="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Paid</span>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
