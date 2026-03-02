@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Monitor, Search, Package, CheckCircle, AlertCircle, RefreshCw, XCircle, Shield, Cpu, Eye, Plus, Pencil, Trash2, X, Save } from 'lucide-react';
+import { Monitor, Search, Package, CheckCircle, AlertCircle, RefreshCw, XCircle, Shield, Cpu, Eye, Plus, Pencil, Trash2, X, Save, UserPlus, UserMinus } from 'lucide-react';
+import AssignDeviceModal from '../components/AssignDeviceModal';
 
 const P = { navy: '#0B1F3A', teal: '#0FA3B1', gold: '#D4AF37', bg: '#F7F9FC', text: '#2E3440', border: '#E1E6EF' };
 
@@ -103,6 +104,7 @@ export default function Devices() {
   const [editDevice, setEditDevice] = useState(null);
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [assignModal, setAssignModal] = useState(null); // { device, mode: 'assign'|'unassign' }
 
   const load = () => base44.entities.Device.list('-created_date', 200).then(d => { setDevices(d); setLoading(false); });
   useEffect(() => { load(); }, []);
@@ -237,6 +239,7 @@ export default function Devices() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: P.bg }}>
       {showForm && <DeviceForm device={editDevice} onSave={handleSave} onCancel={() => { setShowForm(false); setEditDevice(null); }} saving={saving} />}
+      {assignModal && <AssignDeviceModal device={assignModal.device} mode={assignModal.mode} onClose={() => setAssignModal(null)} onDone={async () => { setAssignModal(null); await load(); }} />}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
           <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
@@ -349,6 +352,16 @@ export default function Devices() {
                           <button onClick={() => setSelectedDevice(d)} className="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ backgroundColor: P.teal }}>
                             <Eye className="w-3.5 h-3.5 inline mr-1" />View
                           </button>
+                          {d.status === 'in_stock' && (
+                            <button onClick={() => setAssignModal({ device: d, mode: 'assign' })} className="p-1.5 rounded-lg border-2 hover:bg-green-50" style={{ borderColor: '#BBF7D0' }} title="Assign device">
+                              <UserPlus className="w-3.5 h-3.5" style={{ color: '#10B981' }} />
+                            </button>
+                          )}
+                          {d.status === 'deployed' && (
+                            <button onClick={() => setAssignModal({ device: d, mode: 'unassign' })} className="p-1.5 rounded-lg border-2 hover:bg-orange-50" style={{ borderColor: '#FED7AA' }} title="Unassign device">
+                              <UserMinus className="w-3.5 h-3.5" style={{ color: '#F59E0B' }} />
+                            </button>
+                          )}
                           <button onClick={() => { setEditDevice(d); setShowForm(true); }} className="p-1.5 rounded-lg border-2 hover:bg-gray-50" style={{ borderColor: P.border }}>
                             <Pencil className="w-3.5 h-3.5" style={{ color: P.navy }} />
                           </button>
