@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Monitor, LayoutDashboard, Package, Wrench, FileText, BarChart3, Settings, Menu, X, ChevronDown, Activity, CreditCard, LogOut, User } from 'lucide-react';
+import { Monitor, LayoutDashboard, Package, Wrench, FileText, BarChart3, Settings, Menu, X, ChevronDown, Activity, CreditCard, LogOut, User, Brain } from 'lucide-react';
 import NotificationBell from './components/NotificationBell';
 import { base44 } from '@/api/base44Client';
 
