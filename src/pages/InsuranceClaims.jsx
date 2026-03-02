@@ -601,20 +601,31 @@ export default function InsuranceClaims() {
               {/* Status Actions */}
               <div>
                 <div className="text-sm font-semibold mb-2" style={{ color: P.navy }}>Update Status</div>
-                <div className="flex flex-wrap gap-2">
-                  {['submitted', 'under_review', 'approved', 'rejected', 'paid', 'withdrawn'].map(st => {
-                    const blockedApprove = st === 'approved' && detailClaim.requires_manager_approval && !detailClaim.manager_approved;
-                    return (
-                      <button key={st} onClick={() => handleStatusUpdate(detailClaim, st)}
-                        title={blockedApprove ? 'Requires manager approval first' : ''}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold capitalize"
-                        style={{ backgroundColor: detailClaim.status === st ? P.teal : P.bg, color: detailClaim.status === st ? 'white' : blockedApprove ? '#9CA3AF' : P.text, cursor: blockedApprove ? 'not-allowed' : 'pointer' }}>
-                        {STATUS_CONFIG[st]?.label}{blockedApprove ? ' 🔒' : ''}
-                      </button>
-                    );
-                  })}
-                </div>
-                {detailClaim.requires_manager_approval && !detailClaim.manager_approved && detailClaim.status !== 'pending_manager_approval' && (
+                {['claims_adjuster'].includes(user?.role) ? (
+                  <p className="text-xs px-3 py-2 rounded-lg" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
+                    ℹ️ As a Claims Adjuster, you can only update to 'Under Review' or 'Submitted' statuses. Approvals require a Claims Manager.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {['submitted', 'under_review', 'approved', 'rejected', 'paid', 'withdrawn'].map(st => {
+                      const isAdjuster = user?.role === 'claims_adjuster';
+                      const isRestrictedStatus = ['approved', 'rejected'].includes(st);
+                      const blockedApprove = st === 'approved' && detailClaim.requires_manager_approval && !detailClaim.manager_approved;
+                      const isDisabled = (isAdjuster && isRestrictedStatus) || blockedApprove;
+
+                      return (
+                        <button key={st} onClick={() => handleStatusUpdate(detailClaim, st)}
+                          disabled={isDisabled}
+                          title={isAdjuster && isRestrictedStatus ? 'Only Claims Managers can approve/reject' : blockedApprove ? 'Requires manager approval first' : ''}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold capitalize disabled:opacity-50 disabled:cursor-not-allowed"
+                          style={{ backgroundColor: detailClaim.status === st ? P.teal : P.bg, color: detailClaim.status === st ? 'white' : isDisabled ? '#9CA3AF' : P.text }}>
+                          {STATUS_CONFIG[st]?.label}{blockedApprove ? ' 🔒' : ''}{isAdjuster && isRestrictedStatus ? ' 🔒' : ''}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+                {detailClaim.requires_manager_approval && !detailClaim.manager_approved && detailClaim.status !== 'pending_manager_approval' && !['claims_adjuster'].includes(user?.role) && (
                   <p className="text-xs mt-2" style={{ color: '#7C3AED' }}>
                     💡 To approve this claim, set status to "Pending Mgr Approval" — a manager will then review it.
                   </p>
