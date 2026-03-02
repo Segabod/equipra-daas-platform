@@ -40,6 +40,14 @@ export default function Billing() {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [payingId, setPayingId] = useState(null);
   const [paidInvoices, setPaidInvoices] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [expandedRequest, setExpandedRequest] = useState(null);
+
+  useEffect(() => {
+    base44.entities.DeviceRequest.filter({ status: 'approved' }, '-created_date', 20)
+      .then(reqs => setPendingRequests(reqs.filter(r => r.estimated_monthly_cost > 0)))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
