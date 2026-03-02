@@ -489,6 +489,17 @@ export default function Requests() {
               </div>
             )}
           </div>
+          {/* Cost Summary Sidebar */}
+          {!success && step >= 2 && (
+            <div className="w-72 flex-shrink-0 space-y-4">
+              <CostSummary form={form} />
+              <div className="bg-white rounded-xl shadow-sm p-4 text-xs" style={{ color: P.text }}>
+                <p className="font-semibold mb-1" style={{ color: P.navy }}>How pricing works</p>
+                <p>Base device fee + SLA bundle + accessories, multiplied by quantity, plus 7.5% VAT. Billed monthly.</p>
+              </div>
+            </div>
+          )}
+          </div>
         </div>
       </div>
     );
