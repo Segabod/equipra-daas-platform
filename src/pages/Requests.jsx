@@ -175,6 +175,7 @@ export default function Requests() {
   const handleSubmit = async () => {
     setSubmitting(true);
     const user = await base44.auth.me().catch(() => null);
+    const { total } = calcTotal(form);
     await base44.entities.DeviceRequest.create({
       request_type: form.requestType,
       quantity: form.quantity,
@@ -193,6 +194,7 @@ export default function Requests() {
       service_bundle: form.serviceBundle,
       notes: form.notes,
       status: 'pending_approval',
+      estimated_monthly_cost: Math.round(total),
     });
     await base44.entities.Notification.create({
       user_email: user?.email || 'admin',
