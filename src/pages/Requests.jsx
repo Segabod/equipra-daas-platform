@@ -368,40 +368,49 @@ export default function Requests() {
                   <p style={{ color: P.text }}>Customize your device requirements (all optional)</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Device Type</label>
-                  <div className="grid grid-cols-4 gap-2 mb-4">
-                    {DEVICE_TYPES.map(t => (
-                      <button key={t.value} onClick={() => update('deviceType', t.value)} className="p-3 rounded-xl border-2 text-center text-sm" style={{ borderColor: form.deviceType === t.value ? P.teal : P.border, backgroundColor: form.deviceType === t.value ? '#F0FAFB' : 'white', color: P.navy }}>
-                        {t.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Device Model</label>
-                  <select value={form.model || ''} onChange={e => update('model', e.target.value)} className="w-full px-4 py-2.5 border-2 rounded-lg text-sm" style={{ borderColor: P.border, color: P.navy }}>
-                    <option value="">Any / No preference</option>
-                    {(form.deviceType === 'desktop' ? DESKTOP_MODELS : form.deviceType === 'aio' ? AIO_MODELS : form.deviceType === 'monitor' ? MONITOR_MODELS : LAPTOP_MODELS).map(m => <option key={m} value={m}>{m}</option>)}
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 gap-6">
-                  {[
-                    { field: 'brand', label: 'Brand', opts: BRANDS },
-                    { field: 'processor', label: 'Processor', opts: PROCESSORS },
-                    { field: 'ram', label: 'RAM', opts: RAMS },
-                    { field: 'storage', label: 'Storage', opts: STORAGES },
-                    { field: 'screenSize', label: 'Screen Size', opts: SCREENS },
-                    { field: 'os', label: 'Operating System', opts: OS_LIST },
-                  ].map(({ field, label, opts }) => (
-                    <div key={field}>
-                      <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>{label}</label>
-                      <select value={form[field]} onChange={e=>update(field,e.target.value)} className="w-full px-4 py-2.5 border-2 rounded-lg text-sm" style={{ borderColor: P.border, color: P.navy }}>
-                        <option value="">Any / No preference</option>
-                        {opts.map(o => <option key={o} value={o}>{o}</option>)}
-                      </select>
-                    </div>
-                  ))}
-                </div>
+                   <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Device Type</label>
+                   <div className="grid grid-cols-4 gap-2 mb-4">
+                     {DEVICE_TYPES.map(t => (
+                       <button key={t.value} onClick={() => update('deviceType', t.value)} className="p-3 rounded-xl border-2 text-center text-sm" style={{ borderColor: form.deviceType === t.value ? P.teal : P.border, backgroundColor: form.deviceType === t.value ? '#F0FAFB' : 'white', color: P.navy }}>
+                         {t.label}
+                       </button>
+                     ))}
+                   </div>
+                 </div>
+                 <div>
+                   <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Device Model</label>
+                   {form.deviceClass && (() => {
+                     const classSpecs = DEVICE_SPECS_BY_CLASS[form.deviceClass];
+                     const models = form.deviceType === 'desktop' ? classSpecs.desktopModels : form.deviceType === 'aio' ? classSpecs.aioModels : form.deviceType === 'monitor' ? classSpecs.monitorModels : classSpecs.laptopModels;
+                     return (
+                       <select value={form.model || ''} onChange={e => update('model', e.target.value)} className="w-full px-4 py-2.5 border-2 rounded-lg text-sm" style={{ borderColor: P.border, color: P.navy }}>
+                         <option value="">Any / No preference</option>
+                         {models.map(m => <option key={m} value={m}>{m}</option>)}
+                       </select>
+                     );
+                   })()}
+                 </div>
+                 <div className="grid grid-cols-2 gap-6">
+                   {(() => {
+                     const classSpecs = form.deviceClass ? DEVICE_SPECS_BY_CLASS[form.deviceClass] : null;
+                     return [
+                       { field: 'brand', label: 'Brand', opts: classSpecs?.brands || [] },
+                       { field: 'processor', label: 'Processor', opts: classSpecs?.processors || [] },
+                       { field: 'ram', label: 'RAM', opts: classSpecs?.rams || [] },
+                       { field: 'storage', label: 'Storage', opts: classSpecs?.storages || [] },
+                       { field: 'screenSize', label: 'Screen Size', opts: classSpecs?.screens || [] },
+                       { field: 'os', label: 'Operating System', opts: classSpecs?.os || [] },
+                     ].map(({ field, label, opts }) => (
+                       <div key={field}>
+                         <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>{label}</label>
+                         <select value={form[field]} onChange={e=>update(field,e.target.value)} className="w-full px-4 py-2.5 border-2 rounded-lg text-sm" style={{ borderColor: P.border, color: P.navy }}>
+                           <option value="">Any / No preference</option>
+                           {opts.map(o => <option key={o} value={o}>{o}</option>)}
+                         </select>
+                       </div>
+                     ));
+                   })()}
+                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-3" style={{ color: P.navy }}>Accessories</label>
                   <p className="text-xs mb-3" style={{ color: P.text }}>Paid accessories are charged at an additional monthly rate. Free accessories are included.</p>
