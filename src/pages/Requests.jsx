@@ -176,7 +176,7 @@ export default function Requests() {
     setSubmitting(true);
     const user = await base44.auth.me().catch(() => null);
     const { total } = calcTotal(form);
-    await base44.entities.DeviceRequest.create({
+    const newRequest = await base44.entities.DeviceRequest.create({
       request_type: form.requestType,
       quantity: form.quantity,
       delivery_location: form.deliveryLocation,
