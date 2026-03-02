@@ -288,6 +288,23 @@ export default function Requests() {
                   <h2 className="text-2xl font-bold mb-1" style={{ color: P.navy }}>Configure Specifications</h2>
                   <p style={{ color: P.text }}>Customize your device requirements (all optional)</p>
                 </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Device Type</label>
+                  <div className="grid grid-cols-4 gap-2 mb-4">
+                    {DEVICE_TYPES.map(t => (
+                      <button key={t.value} onClick={() => update('deviceType', t.value)} className="p-3 rounded-xl border-2 text-center text-sm" style={{ borderColor: form.deviceType === t.value ? P.teal : P.border, backgroundColor: form.deviceType === t.value ? '#F0FAFB' : 'white', color: P.navy }}>
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Device Model</label>
+                  <select value={form.model || ''} onChange={e => update('model', e.target.value)} className="w-full px-4 py-2.5 border-2 rounded-lg text-sm" style={{ borderColor: P.border, color: P.navy }}>
+                    <option value="">Any / No preference</option>
+                    {(form.deviceType === 'desktop' ? DESKTOP_MODELS : form.deviceType === 'aio' ? AIO_MODELS : form.deviceType === 'monitor' ? MONITOR_MODELS : LAPTOP_MODELS).map(m => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                </div>
                 <div className="grid grid-cols-2 gap-6">
                   {[
                     { field: 'brand', label: 'Brand', opts: BRANDS },
@@ -307,12 +324,25 @@ export default function Requests() {
                   ))}
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-3" style={{ color: P.navy }}>Accessories (Optional)</label>
+                  <label className="block text-sm font-semibold mb-3" style={{ color: P.navy }}>Accessories</label>
+                  <p className="text-xs mb-3" style={{ color: P.text }}>Paid accessories are charged at an additional monthly rate. Free accessories are included.</p>
                   <div className="grid grid-cols-2 gap-3">
-                    {ACCESSORIES.map(a => (
-                      <label key={a} className="flex items-center p-3 rounded-xl border-2 cursor-pointer" style={{ borderColor: P.border }}>
-                        <input type="checkbox" checked={form.accessories.includes(a)} onChange={() => toggleAccessory(a)} className="mr-3" style={{ accentColor: P.teal }} />
-                        <span className="text-sm" style={{ color: P.navy }}>{a}</span>
+                    {PAID_ACCESSORIES.map(a => (
+                      <label key={a.name} className="flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer" style={{ borderColor: form.accessories.includes(a.name) ? P.teal : P.border, backgroundColor: form.accessories.includes(a.name) ? '#F0FAFB' : 'white' }}>
+                        <div className="flex items-center">
+                          <input type="checkbox" checked={form.accessories.includes(a.name)} onChange={() => toggleAccessory(a.name)} className="mr-2.5" style={{ accentColor: P.teal }} />
+                          <span className="text-sm" style={{ color: P.navy }}>{a.name}</span>
+                        </div>
+                        <span className="text-xs font-semibold ml-2 whitespace-nowrap" style={{ color: P.gold }}>+₦{a.price.toLocaleString()}/mo</span>
+                      </label>
+                    ))}
+                    {FREE_ACCESSORIES.map(a => (
+                      <label key={a} className="flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer" style={{ borderColor: P.border, backgroundColor: 'white' }}>
+                        <div className="flex items-center">
+                          <input type="checkbox" checked={form.accessories.includes(a)} onChange={() => toggleAccessory(a)} className="mr-2.5" style={{ accentColor: P.teal }} />
+                          <span className="text-sm" style={{ color: P.navy }}>{a}</span>
+                        </div>
+                        <span className="text-xs font-semibold ml-2" style={{ color: '#10B981' }}>Free</span>
                       </label>
                     ))}
                   </div>
