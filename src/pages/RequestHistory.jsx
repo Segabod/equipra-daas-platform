@@ -121,15 +121,54 @@ export default function RequestHistory() {
                   </div>
                 </div>
               )}
+              {/* Rejection reason display */}
+              {selected.status === 'rejected' && selected.rejection_reason && (
+                <div className="p-4 rounded-xl" style={{ backgroundColor: '#FEE2E2', border: '1px solid #FECACA' }}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <XCircle className="w-4 h-4" style={{ color: '#DC2626' }} />
+                    <span className="text-sm font-semibold" style={{ color: '#DC2626' }}>Rejection Reason</span>
+                  </div>
+                  <p className="text-sm" style={{ color: '#7F1D1D' }}>{selected.rejection_reason}</p>
+                </div>
+              )}
             </div>
             {selected.status === 'pending_approval' && (
-              <div className="p-6 flex gap-3" style={{ borderTop: `1px solid ${P.border}` }}>
-                <button onClick={() => handleApprove(selected, 'approve')} disabled={approving === selected.id} className="flex-1 py-3 rounded-xl font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#10B981' }}>
-                  <CheckCircle className="w-4 h-4 inline mr-1.5" />Approve
-                </button>
-                <button onClick={() => handleApprove(selected, 'reject')} disabled={approving === selected.id} className="flex-1 py-3 rounded-xl font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#EF4444' }}>
-                  <XCircle className="w-4 h-4 inline mr-1.5" />Reject
-                </button>
+              <div className="p-6 space-y-3" style={{ borderTop: `1px solid ${P.border}` }}>
+                {showRejectInput && (
+                  <div>
+                    <label className="block text-xs font-semibold mb-1.5" style={{ color: P.navy }}>
+                      Rejection Reason <span style={{ color: '#EF4444' }}>*</span>
+                    </label>
+                    <textarea
+                      value={rejectReason}
+                      onChange={e => setRejectReason(e.target.value)}
+                      rows={3}
+                      placeholder="Provide a reason for rejecting this request..."
+                      className="w-full px-4 py-2.5 border-2 rounded-xl text-sm resize-none"
+                      style={{ borderColor: '#FECACA' }}
+                      autoFocus
+                    />
+                  </div>
+                )}
+                <div className="flex gap-3">
+                  <button onClick={() => handleApprove(selected, 'approve')} disabled={approving === selected.id || showRejectInput} className="flex-1 py-3 rounded-xl font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#10B981' }}>
+                    <CheckCircle className="w-4 h-4 inline mr-1.5" />Approve
+                  </button>
+                  {!showRejectInput ? (
+                    <button onClick={() => setShowRejectInput(true)} className="flex-1 py-3 rounded-xl font-semibold text-white" style={{ backgroundColor: '#EF4444' }}>
+                      <XCircle className="w-4 h-4 inline mr-1.5" />Reject
+                    </button>
+                  ) : (
+                    <div className="flex-1 flex gap-2">
+                      <button onClick={() => { setShowRejectInput(false); setRejectReason(''); }} className="flex-1 py-3 rounded-xl font-semibold border-2 text-sm" style={{ borderColor: P.border, color: P.navy }}>
+                        Cancel
+                      </button>
+                      <button onClick={() => handleApprove(selected, 'reject')} disabled={approving === selected.id || !rejectReason.trim()} className="flex-1 py-3 rounded-xl font-semibold text-white disabled:opacity-50 text-sm" style={{ backgroundColor: '#EF4444' }}>
+                        {approving === selected.id ? 'Saving...' : 'Confirm Reject'}
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
