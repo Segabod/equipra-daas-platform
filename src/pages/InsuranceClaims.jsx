@@ -659,11 +659,11 @@ export default function InsuranceClaims() {
                     💡 To approve this claim, set status to "Pending Mgr Approval" — a manager will then review it.
                   </p>
                 )}
-              </div>
-              </div>
-              </div>
-              </div>
-      )}
+                </div>
+                </div>
+                </div>
+                </div>
+                )}
 
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
