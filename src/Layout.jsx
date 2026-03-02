@@ -13,6 +13,7 @@ const ALL_NAV_ITEMS = [
   { label: 'Req. History', page: 'RequestHistory', icon: BarChart3, roles: ['admin', 'it_admin', 'manager', 'approver'] },
   { label: 'Tickets', page: 'Tickets', icon: Wrench, roles: ['admin', 'it_admin', 'manager', 'end_user', 'user'] },
   { label: 'Health', page: 'DeviceHealth', icon: Activity, roles: ['admin', 'it_admin'] },
+  { label: 'Predictive AI', page: 'PredictiveMaintenance', icon: Brain, roles: ['admin', 'it_admin'] },
   { label: 'Procurement', page: 'Procurement', icon: BarChart3, roles: ['admin', 'it_admin'] },
   { label: 'Billing', page: 'Billing', icon: CreditCard, roles: ['admin'] },
   { label: 'Analytics', page: 'Analytics', icon: BarChart3, roles: ['admin', 'it_admin', 'manager'] },
