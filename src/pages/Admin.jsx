@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Users, Monitor, AlertCircle, CheckCircle, DollarSign, Clock, Package, TrendingUp, BarChart3, ChevronRight } from 'lucide-react';
+import { Users, Monitor, AlertCircle, CheckCircle, DollarSign, Clock, Package, TrendingUp, BarChart3, ChevronRight, Shield } from 'lucide-react';
+import UserRoleManager from '../components/UserRoleManager';
 
 const P = { navy: '#0B1F3A', teal: '#0FA3B1', gold: '#D4AF37', bg: '#F7F9FC', text: '#2E3440', border: '#E1E6EF' };
 
@@ -30,6 +31,7 @@ export default function Admin() {
   const [tickets, setTickets] = useState([]);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState('operations');
 
   useEffect(() => {
     Promise.all([
@@ -57,17 +59,29 @@ export default function Admin() {
     <div className="min-h-screen" style={{ backgroundColor: P.bg }}>
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <div>
-            <h1 className="text-2xl font-bold flex items-center" style={{ color: P.navy }}>
-              Admin Portal
-              <span className="ml-3 px-2 py-0.5 text-xs font-bold rounded" style={{ backgroundColor: P.gold, color: 'white' }}>OPERATIONS</span>
-            </h1>
-            <p className="text-sm mt-0.5" style={{ color: P.text }}>Real-time DaaS operations overview</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold flex items-center" style={{ color: P.navy }}>
+                Admin Portal
+                <span className="ml-3 px-2 py-0.5 text-xs font-bold rounded" style={{ backgroundColor: P.gold, color: 'white' }}>OPERATIONS</span>
+              </h1>
+              <p className="text-sm mt-0.5" style={{ color: P.text }}>Real-time DaaS operations overview</p>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setTab('operations')} className="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2" style={{ backgroundColor: tab === 'operations' ? P.navy : 'transparent', color: tab === 'operations' ? 'white' : P.text }}>
+                <BarChart3 className="w-4 h-4" />Operations
+              </button>
+              <button onClick={() => setTab('users')} className="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2" style={{ backgroundColor: tab === 'users' ? P.navy : 'transparent', color: tab === 'users' ? 'white' : P.text }}>
+                <Shield className="w-4 h-4" />User Roles
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {tab === 'users' && <UserRoleManager />}
+        {tab === 'operations' && <>
         {/* Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
           {metrics.map((m, i) => (
@@ -207,6 +221,7 @@ export default function Admin() {
             </div>
           </div>
         )}
+        </>}
       </div>
     </div>
   );
