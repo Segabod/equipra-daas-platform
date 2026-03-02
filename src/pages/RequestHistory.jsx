@@ -113,6 +113,19 @@ export default function RequestHistory() {
                   <span className="font-semibold text-right ml-4" style={{ color: P.navy }}>{v}</span>
                 </div>
               ))}
+              {selected.estimated_monthly_cost > 0 && (
+                <div className="mt-2 p-4 rounded-xl" style={{ backgroundColor: '#0B1F3A' }}>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="text-xs font-semibold mb-0.5" style={{ color: 'rgba(255,255,255,0.6)' }}>Estimated Monthly Cost</div>
+                      <div className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>Incl. VAT (7.5%)</div>
+                    </div>
+                    <div className="text-2xl font-black" style={{ color: '#D4AF37' }}>
+                      ₦{selected.estimated_monthly_cost.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              )}
               {selected.accessories?.length > 0 && (
                 <div className="text-sm">
                   <span style={{ color: P.text }}>Accessories</span>
