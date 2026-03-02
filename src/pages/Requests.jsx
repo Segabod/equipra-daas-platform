@@ -655,10 +655,116 @@ export default function Requests() {
             </div>
           )}
           </div>
-        </div>
-      </div>
-    );
-  }
+          </div>
+
+          {/* Request Details Modal */}
+          {selectedRequest && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+           <div className="p-6 flex items-center justify-between" style={{ borderBottom: `1px solid ${P.border}` }}>
+             <h2 className="text-lg font-bold" style={{ color: P.navy }}>Request Details</h2>
+             <button onClick={() => { setSelectedRequest(null); setShowPayment(false); }} className="p-1 hover:bg-gray-100 rounded-lg">
+               <X className="w-5 h-5" style={{ color: '#6B7280' }} />
+             </button>
+           </div>
+
+           <div className="p-6 space-y-6">
+             {!showPayment && (
+               <>
+                 <div>
+                   <h3 className="font-semibold mb-3" style={{ color: P.navy }}>Request Information</h3>
+                   <div className="grid grid-cols-2 gap-4">
+                     <div>
+                       <p className="text-xs" style={{ color: P.text }}>Request ID</p>
+                       <p className="font-semibold mt-1" style={{ color: P.navy }}>REQ-{selectedRequest.id?.slice(-4)?.toUpperCase()}</p>
+                     </div>
+                     <div>
+                       <p className="text-xs" style={{ color: P.text }}>Type</p>
+                       <p className="font-semibold mt-1" style={{ color: P.navy }}>{REQUEST_TYPES.find(t=>t.value===selectedRequest.request_type)?.label}</p>
+                     </div>
+                     <div>
+                       <p className="text-xs" style={{ color: P.text }}>Quantity</p>
+                       <p className="font-semibold mt-1" style={{ color: P.navy }}>{selectedRequest.quantity}</p>
+                     </div>
+                     <div>
+                       <p className="text-xs" style={{ color: P.text }}>Status</p>
+                       <p className="font-semibold mt-1" style={{ color: P.navy }}>{(selectedRequest.status||'draft').replace('_', ' ')}</p>
+                     </div>
+                     <div>
+                       <p className="text-xs" style={{ color: P.text }}>Location</p>
+                       <p className="font-semibold mt-1" style={{ color: P.navy }}>{selectedRequest.delivery_location}</p>
+                     </div>
+                     <div>
+                       <p className="text-xs" style={{ color: P.text }}>Department</p>
+                       <p className="font-semibold mt-1" style={{ color: P.navy }}>{selectedRequest.cost_center}</p>
+                     </div>
+                   </div>
+                 </div>
+
+                 <div>
+                   <h3 className="font-semibold mb-3" style={{ color: P.navy }}>Device Details</h3>
+                   <div className="grid grid-cols-2 gap-4">
+                     <div>
+                       <p className="text-xs" style={{ color: P.text }}>Class</p>
+                       <p className="font-semibold mt-1" style={{ color: P.navy }}>{DEVICE_CLASSES.find(d=>d.value===selectedRequest.device_class)?.label}</p>
+                     </div>
+                     <div>
+                       <p className="text-xs" style={{ color: P.text }}>Service Bundle</p>
+                       <p className="font-semibold mt-1" style={{ color: P.navy }}>{SERVICE_BUNDLES.find(b=>b.value===selectedRequest.service_bundle)?.label}</p>
+                     </div>
+                   </div>
+                 </div>
+
+                 <div>
+                   <h3 className="font-semibold mb-3" style={{ color: P.navy }}>Pricing</h3>
+                   <div className="p-4 rounded-lg" style={{ backgroundColor: P.bg }}>
+                     <p className="text-sm" style={{ color: P.text }}>Estimated Monthly Cost</p>
+                     <p className="text-3xl font-bold mt-2" style={{ color: P.teal }}>₦{selectedRequest.estimated_monthly_cost?.toLocaleString()}</p>
+                   </div>
+                 </div>
+
+                 {selectedRequest.status === 'approved' && (
+                   <div>
+                     <button 
+                       onClick={() => setShowPayment(true)}
+                       className="w-full px-4 py-3 rounded-lg font-semibold text-white"
+                       style={{ backgroundColor: P.teal }}
+                     >
+                       Proceed to Payment
+                     </button>
+                   </div>
+                 )}
+               </>
+             )}
+
+             {showPayment && (
+               <div className="space-y-4">
+                 <button
+                   onClick={() => setShowPayment(false)}
+                   className="text-sm font-medium"
+                   style={{ color: P.teal }}
+                 >
+                   ← Back to Details
+                 </button>
+                 <PaymentCheckout
+                   amount={selectedRequest.estimated_monthly_cost}
+                   description={`Device Request - ${DEVICE_CLASSES.find(d=>d.value===selectedRequest.device_class)?.label}`}
+                   requestId={selectedRequest.id}
+                   type="subscription"
+                   onSuccess={() => {
+                     setSelectedRequest(null);
+                     setShowPayment(false);
+                   }}
+                 />
+               </div>
+             )}
+           </div>
+          </div>
+          </div>
+          )}
+          </div>
+          );
+          }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: P.bg }}>
