@@ -5,18 +5,18 @@ import { Monitor, LayoutDashboard, Package, Wrench, FileText, BarChart3, Setting
 import NotificationBell from './components/NotificationBell';
 import { base44 } from '@/api/base44Client';
 
-const NAV_ITEMS = [
-  { label: 'Home', page: 'Home', icon: Monitor },
-  { label: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
-  { label: 'Devices', page: 'Devices', icon: Package },
-  { label: 'Requests', page: 'Requests', icon: FileText },
-  { label: 'Req. History', page: 'RequestHistory', icon: BarChart3 },
-  { label: 'Tickets', page: 'Tickets', icon: Wrench },
-  { label: 'Health', page: 'DeviceHealth', icon: Activity },
-  { label: 'Procurement', page: 'Procurement', icon: BarChart3 },
-  { label: 'Billing', page: 'Billing', icon: CreditCard },
-  { label: 'Analytics', page: 'Analytics', icon: BarChart3 },
-  { label: 'Admin', page: 'Admin', icon: Settings },
+const ALL_NAV_ITEMS = [
+  { label: 'Home', page: 'Home', icon: Monitor, roles: ['admin', 'it_admin', 'manager', 'approver', 'end_user', 'user'] },
+  { label: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'it_admin', 'manager', 'approver', 'end_user', 'user'] },
+  { label: 'Devices', page: 'Devices', icon: Package, roles: ['admin', 'it_admin'] },
+  { label: 'Requests', page: 'Requests', icon: FileText, roles: ['admin', 'it_admin', 'manager', 'end_user', 'user'] },
+  { label: 'Req. History', page: 'RequestHistory', icon: BarChart3, roles: ['admin', 'it_admin', 'manager', 'approver'] },
+  { label: 'Tickets', page: 'Tickets', icon: Wrench, roles: ['admin', 'it_admin', 'manager', 'end_user', 'user'] },
+  { label: 'Health', page: 'DeviceHealth', icon: Activity, roles: ['admin', 'it_admin'] },
+  { label: 'Procurement', page: 'Procurement', icon: BarChart3, roles: ['admin', 'it_admin'] },
+  { label: 'Billing', page: 'Billing', icon: CreditCard, roles: ['admin'] },
+  { label: 'Analytics', page: 'Analytics', icon: BarChart3, roles: ['admin', 'it_admin', 'manager'] },
+  { label: 'Admin', page: 'Admin', icon: Settings, roles: ['admin'] },
 ];
 
 export default function Layout({ children, currentPageName }) {
