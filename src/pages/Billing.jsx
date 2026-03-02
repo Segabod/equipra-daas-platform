@@ -42,6 +42,7 @@ export default function Billing() {
   const [paidInvoices, setPaidInvoices] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [expandedRequest, setExpandedRequest] = useState(null);
+  const [exportFormat, setExportFormat] = useState(null);
 
   useEffect(() => {
     base44.entities.DeviceRequest.filter({ status: 'approved' }, '-created_date', 20)
