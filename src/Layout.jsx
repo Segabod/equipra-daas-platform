@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Monitor, LayoutDashboard, Package, Wrench, FileText, BarChart3, Settings, Menu, X, Bell, ChevronDown } from 'lucide-react';
+import { Monitor, LayoutDashboard, Package, Wrench, FileText, BarChart3, Settings, Menu, X, ChevronDown, Activity } from 'lucide-react';
+import NotificationBell from './components/NotificationBell';
+import { base44 } from '@/api/base44Client';
 
 const NAV_ITEMS = [
   { label: 'Home', page: 'Home', icon: Monitor },
@@ -10,12 +12,16 @@ const NAV_ITEMS = [
   { label: 'Requests', page: 'Requests', icon: FileText },
   { label: 'Req. History', page: 'RequestHistory', icon: BarChart3 },
   { label: 'Tickets', page: 'Tickets', icon: Wrench },
+  { label: 'Reports', page: 'Reports', icon: BarChart3 },
+  { label: 'Health', page: 'DeviceHealth', icon: Activity },
   { label: 'Billing', page: 'Billing', icon: BarChart3 },
   { label: 'Admin', page: 'Admin', icon: Settings },
 ];
 
 export default function Layout({ children, currentPageName }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
   const isPublicPage = currentPageName === 'Home';
 
@@ -78,15 +84,12 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Right */}
             <div className="hidden md:flex items-center space-x-3">
-              <button className="relative p-2 rounded-lg hover:bg-gray-100">
-                <Bell className="w-5 h-5" style={{ color: '#2E3440' }} />
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full" style={{ backgroundColor: '#0FA3B1' }}></span>
-              </button>
+              <NotificationBell userEmail={user?.email} />
               <div className="flex items-center space-x-2 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-50">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: '#0FA3B1' }}>
-                  IT
+                  {user?.full_name?.charAt(0) || 'U'}
                 </div>
-                <span className="text-sm font-medium" style={{ color: '#0B1F3A' }}>IT Manager</span>
+                <span className="text-sm font-medium" style={{ color: '#0B1F3A' }}>{user?.full_name || 'User'}</span>
                 <ChevronDown className="w-4 h-4" style={{ color: '#2E3440' }} />
               </div>
             </div>
