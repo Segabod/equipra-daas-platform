@@ -197,7 +197,50 @@ export default function Layout({ children, currentPageName }) {
         {mobileOpen && (
           <div className="md:hidden border-t px-4 py-3 space-y-1" style={{ borderColor: '#E1E6EF', backgroundColor: 'white' }}>
             {NAV_ITEMS.map((item) => {
-              const active = currentPageName === item.page;
+              const active = item.page && currentPageName === item.page;
+              const hasSubmenu = item.submenu && item.submenu.length > 0;
+              const Icon = item.icon || (hasSubmenu ? ChevronDown : null);
+              const visibleSubmenu = hasSubmenu ? item.submenu.filter(sub => sub.roles.includes(userRole)) : [];
+              
+              if (hasSubmenu && visibleSubmenu.length === 0) return null;
+              
+              if (hasSubmenu) {
+                const isOpen = openDropdown === item.label;
+                return (
+                  <div key={item.label}>
+                    <button
+                      onClick={() => setOpenDropdown(isOpen ? null : item.label)}
+                      className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium"
+                      style={{ color: '#2E3440' }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        {Icon && <Icon className="w-4 h-4" />}
+                        <span>{item.label}</span>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {isOpen && (
+                      <div className="pl-6 space-y-1 mt-1">
+                        {visibleSubmenu.map((sub, idx) => (
+                          <Link
+                            key={idx}
+                            to={createPageUrl(sub.page)}
+                            onClick={() => setMobileOpen(false)}
+                            className="block px-3 py-2 rounded-lg text-sm"
+                            style={{
+                              backgroundColor: currentPageName === sub.page ? '#0B1F3A' : 'transparent',
+                              color: currentPageName === sub.page ? 'white' : '#2E3440',
+                            }}
+                          >
+                            {sub.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              
               return (
                 <Link
                   key={item.page}
@@ -209,7 +252,7 @@ export default function Layout({ children, currentPageName }) {
                     color: active ? 'white' : '#2E3440',
                   }}
                 >
-                  <item.icon className="w-4 h-4" />
+                  {Icon && <Icon className="w-4 h-4" />}
                   <span>{item.label}</span>
                 </Link>
               );
