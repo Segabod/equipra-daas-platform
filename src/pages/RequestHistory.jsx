@@ -107,7 +107,7 @@ export default function RequestHistory() {
                 ['Status', STATUS_CONFIG[selected.status]?.label || selected.status],
                 ['Submitted By', selected.created_by || '—'],
                 ['Notes', selected.notes || '—'],
-              ].map(([l, v]) => (
+              ].filter(([, v]) => v && v !== '—' || true).map(([l, v]) => (
                 <div key={l} className="flex justify-between text-sm">
                   <span style={{ color: P.text }}>{l}</span>
                   <span className="font-semibold text-right ml-4" style={{ color: P.navy }}>{v}</span>
