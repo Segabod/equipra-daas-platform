@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Wrench, Search, Clock, Check, ChevronRight, Plus, AlertCircle, CheckCircle } from 'lucide-react';
+import { Wrench, Search, Clock, Check, ChevronRight, Plus, AlertCircle, CheckCircle, X, User } from 'lucide-react';
+import { logAudit } from '../components/audit';
 
 const P = { navy: '#0B1F3A', teal: '#0FA3B1', gold: '#D4AF37', bg: '#F7F9FC', text: '#2E3440', border: '#E1E6EF' };
 
@@ -34,10 +35,14 @@ export default function Tickets() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [deviceSearch, setDeviceSearch] = useState('');
   const [selectedDevice, setSelectedDevice] = useState(null);
+  const [detailTicket, setDetailTicket] = useState(null);
   const [form, setForm] = useState({ issueType: '', severity: '', description: '', pickupLocation: '', pickupTime: '', needSwap: false });
   const [success, setSuccess] = useState(false);
+
+  const IT_ADMINS = ['Chidi Nwosu - IT Manager', 'Adaeze Obi - IT Support', 'Emeka Eze - Systems Admin'];
 
   useEffect(() => {
     Promise.all([
@@ -53,15 +58,16 @@ export default function Tickets() {
   });
 
   const filteredTickets = tickets.filter(t => {
+    if (statusFilter !== 'all' && t.status !== statusFilter) return false;
     if (!search) return true;
     const q = search.toLowerCase();
-    return (t.device_model||'').toLowerCase().includes(q) || (t.issue_type||'').toLowerCase().includes(q);
+    return (t.device_model||'').toLowerCase().includes(q) || (t.issue_type||'').toLowerCase().includes(q) || (t.device_asset_tag||'').toLowerCase().includes(q) || (t.assigned_user||'').toLowerCase().includes(q);
   });
 
   const handleSubmit = async () => {
     setSubmitting(true);
     const severity = SEVERITY.find(s => s.value === form.severity);
-    await base44.entities.Ticket.create({
+    const ticket = await base44.entities.Ticket.create({
       device_asset_tag: selectedDevice.asset_tag,
       device_model: selectedDevice.model,
       assigned_user: selectedDevice.assigned_user,
@@ -75,11 +81,28 @@ export default function Tickets() {
       need_swap: form.needSwap,
       sla_target: severity?.sla,
     });
+    await logAudit({ action: 'create', entityType: 'Ticket', entityId: ticket?.id, entityLabel: selectedDevice.asset_tag, details: `Ticket created: ${ISSUE_TYPES.find(i=>i.value===form.issueType)?.label} on ${selectedDevice.model}` });
     const updated = await base44.entities.Ticket.list('-created_date', 50);
     setTickets(updated);
     setSuccess(true);
     setSubmitting(false);
     setTimeout(() => { setView('list'); setStep(1); setForm({ issueType:'', severity:'', description:'', pickupLocation:'', pickupTime:'', needSwap: false }); setSelectedDevice(null); setDeviceSearch(''); setSuccess(false); }, 2000);
+  };
+
+  const handleStatusChange = async (ticket, newStatus) => {
+    await base44.entities.Ticket.update(ticket.id, { status: newStatus });
+    await logAudit({ action: 'status_change', entityType: 'Ticket', entityId: ticket.id, entityLabel: ticket.device_asset_tag, details: `Ticket status changed`, oldValue: ticket.status, newValue: newStatus });
+    const updated = await base44.entities.Ticket.list('-created_date', 50);
+    setTickets(updated);
+    if (detailTicket?.id === ticket.id) setDetailTicket({ ...detailTicket, status: newStatus });
+  };
+
+  const handleAssignTech = async (ticket, tech) => {
+    await base44.entities.Ticket.update(ticket.id, { technician: tech, status: ticket.status === 'open' ? 'in_progress' : ticket.status });
+    await logAudit({ action: 'update', entityType: 'Ticket', entityId: ticket.id, entityLabel: ticket.device_asset_tag, details: `Assigned to ${tech}` });
+    const updated = await base44.entities.Ticket.list('-created_date', 50);
+    setTickets(updated);
+    if (detailTicket?.id === ticket.id) setDetailTicket({ ...detailTicket, technician: tech });
   };
 
   if (view === 'new') {
