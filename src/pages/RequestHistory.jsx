@@ -39,7 +39,15 @@ export default function RequestHistory() {
 
   const handleApprove = async (req, action) => {
     setApproving(req.id);
-    await base44.entities.DeviceRequest.update(req.id, { status: action === 'approve' ? 'approved' : 'rejected' });
+    const newStatus = action === 'approve' ? 'approved' : 'rejected';
+    await base44.entities.DeviceRequest.update(req.id, { status: newStatus });
+    await base44.entities.Notification.create({
+      user_email: req.created_by || 'admin',
+      title: `Request ${newStatus === 'approved' ? 'Approved ✅' : 'Rejected ❌'}`,
+      message: `Your device request (REQ-${req.id?.slice(-4)?.toUpperCase()}) has been ${newStatus} by ${req.approver || 'an approver'}.`,
+      type: 'request_status_change',
+      link_page: 'RequestHistory',
+    });
     await load();
     setSelected(null);
     setApproving(null);
