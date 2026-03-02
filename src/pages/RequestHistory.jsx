@@ -54,6 +54,21 @@ export default function RequestHistory() {
       type: 'request_status_change',
       link_page: 'RequestHistory',
     });
+    // Send status change email to requestor
+    if (req.created_by) {
+      base44.functions.invoke('sendRequestEmail', {
+        event: 'status_changed',
+        requestData: {
+          id: req.id,
+          device_class: req.device_class,
+          quantity: req.quantity,
+          approver: req.approver,
+          newStatus,
+          rejectionReason: action === 'reject' ? rejectReason : null,
+          requestorEmail: req.created_by,
+        },
+      }).catch(() => {});
+    }
     await load();
     setSelected(null);
     setApproving(null);
