@@ -32,6 +32,9 @@ const COLORS = ['#0FA3B1', '#0B1F3A', '#D4AF37', '#059669', '#DC2626', '#D97706'
 export default function ClaimsAnalytics() {
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
   useEffect(() => {
     base44.entities.InsuranceClaim.list('-created_date', 500).then(c => {
