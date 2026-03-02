@@ -1,0 +1,308 @@
+/* Existing Tailwind imports */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Database Schema Reference - Export to Supabase */
+/* 
+This file documents the database schema needed for Supabase migration.
+
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  full_name VARCHAR(255),
+  role VARCHAR(50) DEFAULT 'user',
+  department VARCHAR(255),
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE devices (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  asset_tag VARCHAR(255) UNIQUE NOT NULL,
+  model VARCHAR(255) NOT NULL,
+  serial VARCHAR(255),
+  brand VARCHAR(100),
+  processor VARCHAR(255),
+  ram VARCHAR(50),
+  storage VARCHAR(50),
+  screen_size VARCHAR(50),
+  os VARCHAR(100),
+  status VARCHAR(50) DEFAULT 'in_stock',
+  device_class VARCHAR(50),
+  assigned_user VARCHAR(255),
+  assigned_email VARCHAR(255),
+  department VARCHAR(255),
+  location VARCHAR(255),
+  purchase_date DATE,
+  lease_start DATE,
+  lease_end DATE,
+  warranty_expiry DATE,
+  end_of_life_date DATE,
+  refresh_date DATE,
+  monthly_rate DECIMAL(12, 2),
+  condition_score INTEGER,
+  warranty VARCHAR(255),
+  insurance VARCHAR(255),
+  disposition_status VARCHAR(50) DEFAULT 'active',
+  disposition_date DATE,
+  disposition_notes TEXT,
+  warranty_alert_sent BOOLEAN DEFAULT FALSE,
+  eol_alert_sent BOOLEAN DEFAULT FALSE,
+  created_by VARCHAR(255),
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE device_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  request_type VARCHAR(50),
+  quantity INTEGER DEFAULT 1,
+  delivery_location VARCHAR(255),
+  required_date DATE,
+  cost_center VARCHAR(255),
+  approver VARCHAR(255),
+  device_class VARCHAR(50),
+  brand VARCHAR(100),
+  processor VARCHAR(255),
+  ram VARCHAR(50),
+  storage VARCHAR(50),
+  screen_size VARCHAR(50),
+  os VARCHAR(100),
+  accessories TEXT[],
+  service_bundle VARCHAR(50) DEFAULT 'standard',
+  status VARCHAR(50) DEFAULT 'draft',
+  notes TEXT,
+  rejection_reason TEXT,
+  estimated_monthly_cost DECIMAL(12, 2),
+  created_by VARCHAR(255),
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE tickets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ticket_id VARCHAR(255) UNIQUE,
+  device_asset_tag VARCHAR(255),
+  device_model VARCHAR(255),
+  assigned_user VARCHAR(255),
+  department VARCHAR(255),
+  issue_type VARCHAR(100),
+  severity VARCHAR(50) DEFAULT 'medium',
+  description TEXT,
+  status VARCHAR(50) DEFAULT 'open',
+  pickup_location VARCHAR(255),
+  pickup_time VARCHAR(100),
+  need_swap BOOLEAN DEFAULT FALSE,
+  resolution TEXT,
+  technician VARCHAR(255),
+  cost DECIMAL(12, 2) DEFAULT 0,
+  covered BOOLEAN DEFAULT TRUE,
+  sla_target VARCHAR(100),
+  resolved_date DATE,
+  created_by VARCHAR(255),
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE insurance_claims (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  claim_number VARCHAR(255) UNIQUE,
+  device_asset_tag VARCHAR(255),
+  device_model VARCHAR(255),
+  assigned_user VARCHAR(255),
+  department VARCHAR(255),
+  incident_type VARCHAR(100),
+  incident_date DATE,
+  incident_location VARCHAR(255),
+  incident_description TEXT,
+  police_report_number VARCHAR(255),
+  estimated_value DECIMAL(12, 2),
+  claim_amount DECIMAL(12, 2),
+  approved_amount DECIMAL(12, 2),
+  status VARCHAR(50) DEFAULT 'draft',
+  insurer_reference VARCHAR(255),
+  rejection_reason TEXT,
+  supporting_docs TEXT,
+  notes TEXT,
+  reviewed_by VARCHAR(255),
+  resolved_date DATE,
+  requires_manager_approval BOOLEAN DEFAULT FALSE,
+  manager_approved BOOLEAN DEFAULT FALSE,
+  manager_approved_by VARCHAR(255),
+  manager_approval_notes TEXT,
+  manager_approval_date DATE,
+  created_by VARCHAR(255),
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_email VARCHAR(255) NOT NULL,
+  title VARCHAR(255),
+  message TEXT,
+  type VARCHAR(100),
+  read BOOLEAN DEFAULT FALSE,
+  link_page VARCHAR(255),
+  created_by VARCHAR(255),
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE companies (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  industry VARCHAR(255),
+  size VARCHAR(50),
+  country VARCHAR(100),
+  city VARCHAR(100),
+  phone VARCHAR(20),
+  address TEXT,
+  plan VARCHAR(50) DEFAULT 'standard',
+  onboarded BOOLEAN DEFAULT FALSE,
+  created_by VARCHAR(255),
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE audit_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  action VARCHAR(255),
+  entity_type VARCHAR(100),
+  entity_id UUID,
+  entity_label VARCHAR(255),
+  user_email VARCHAR(255),
+  user_name VARCHAR(255),
+  details TEXT,
+  old_value TEXT,
+  new_value TEXT,
+  created_by VARCHAR(255),
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE invoices (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  invoice_id VARCHAR(255) UNIQUE,
+  month VARCHAR(50),
+  issue_date DATE,
+  due_date DATE,
+  amount DECIMAL(12, 2),
+  status VARCHAR(50) DEFAULT 'pending',
+  paid_amount DECIMAL(12, 2),
+  paid_date DATE,
+  payment_method VARCHAR(100),
+  stripe_session_id VARCHAR(255),
+  stripe_subscription_id VARCHAR(255),
+  customer_email VARCHAR(255),
+  customer_name VARCHAR(255),
+  reminder_sent_before BOOLEAN DEFAULT FALSE,
+  reminder_sent_after BOOLEAN DEFAULT FALSE,
+  created_by VARCHAR(255),
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEXES:
+- idx_devices_asset_tag ON devices(asset_tag)
+- idx_devices_status ON devices(status)
+- idx_devices_assigned_user ON devices(assigned_user)
+- idx_device_requests_status ON device_requests(status)
+- idx_tickets_status ON tickets(status)
+- idx_insurance_claims_status ON insurance_claims(status)
+- idx_notifications_user_email ON notifications(user_email)
+- idx_audit_logs_entity_id ON audit_logs(entity_id)
+- idx_invoices_status ON invoices(status)
+
+For Supabase:
+1. Go to your Supabase project dashboard
+2. Open the SQL Editor
+3. Copy the CREATE TABLE statements above
+4. Execute the queries
+5. Tables will be created in your public schema
+6. Enable Row Level Security (RLS) for sensitive tables if needed
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
