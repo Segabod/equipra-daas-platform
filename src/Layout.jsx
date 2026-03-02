@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Monitor, LayoutDashboard, Package, Wrench, FileText, BarChart3, Settings, Menu, X, ChevronDown, Activity, CreditCard, LogOut, User, Brain, Shield } from 'lucide-react';
 import NotificationBell from './components/NotificationBell';
+import Footer from './components/Footer';
 import { base44 } from '@/api/base44Client';
 
 const ALL_NAV_ITEMS = [
