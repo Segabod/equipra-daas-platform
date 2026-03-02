@@ -302,9 +302,11 @@ export default function Devices() {
     setSelectedDevice(null);
   };
 
+  const [detailTab, setDetailTab] = useState('overview');
+
   if (selectedDevice) {
     const s = STATUS_CONFIG[selectedDevice.status] || STATUS_CONFIG.in_stock;
-    const days = getDaysUntilRefresh(selectedDevice.refresh_date);
+    const DISPOSITION_COLORS = { active: '#10B981', retired: '#6B7280', recycled: '#2563EB', resold: '#7C3AED', donated: '#F59E0B', lost_written_off: '#EF4444' };
     return (
       <div className="min-h-screen" style={{ backgroundColor: P.bg }}>
         {showForm && <DeviceForm device={selectedDevice} onSave={handleSave} onCancel={() => setShowForm(false)} saving={saving} />}
@@ -324,7 +326,7 @@ export default function Devices() {
         <div className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <button onClick={() => setSelectedDevice(null)} className="text-sm font-medium" style={{ color: P.teal }}>← Back to Inventory</button>
+              <button onClick={() => { setSelectedDevice(null); setDetailTab('overview'); }} className="text-sm font-medium" style={{ color: P.teal }}>← Back to Inventory</button>
               <div className="w-px h-6" style={{ backgroundColor: P.border }} />
               <div>
                 <h1 className="text-xl font-bold" style={{ color: P.navy }}>{selectedDevice.model}</h1>
@@ -340,44 +342,121 @@ export default function Devices() {
               </button>
             </div>
           </div>
+          {/* Detail tabs */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-1 pb-0">
+            {[{ key: 'overview', label: 'Overview' }, { key: 'lifecycle', label: 'Lifecycle & Coverage' }, { key: 'history', label: 'Device History' }].map(t => (
+              <button key={t.key} onClick={() => setDetailTab(t.key)}
+                className="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors"
+                style={{ borderColor: detailTab === t.key ? P.teal : 'transparent', color: detailTab === t.key ? P.teal : P.text }}>
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 space-y-6">
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex items-start justify-between mb-6">
-                  <h2 className="text-xl font-bold" style={{ color: P.navy }}>Device Overview</h2>
-                  <span className="px-3 py-1 rounded-full text-sm font-semibold flex items-center" style={{ backgroundColor: s.bg, color: s.color }}>
-                    {React.createElement(s.icon, { className: 'w-4 h-4 mr-1.5' })}{s.label}
-                  </span>
+          {/* OVERVIEW TAB */}
+          {detailTab === 'overview' && (
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="md:col-span-2 space-y-6">
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="flex items-start justify-between mb-6">
+                    <h2 className="text-xl font-bold" style={{ color: P.navy }}>Device Overview</h2>
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1 rounded-full text-sm font-semibold flex items-center" style={{ backgroundColor: s.bg, color: s.color }}>
+                        {React.createElement(s.icon, { className: 'w-4 h-4 mr-1.5' })}{s.label}
+                      </span>
+                      {selectedDevice.disposition_status && selectedDevice.disposition_status !== 'active' && (
+                        <span className="px-3 py-1 rounded-full text-sm font-semibold" style={{ backgroundColor: `${DISPOSITION_COLORS[selectedDevice.disposition_status]}20`, color: DISPOSITION_COLORS[selectedDevice.disposition_status] }}>
+                          {selectedDevice.disposition_status.replace('_', ' ')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-6">
+                    {[
+                      ['Asset Tag', selectedDevice.asset_tag],
+                      ['Serial Number', selectedDevice.serial],
+                      ['Brand', selectedDevice.brand],
+                      ['Monthly Rate', selectedDevice.monthly_rate ? `₦${(selectedDevice.monthly_rate||0).toLocaleString()}/mo` : '—'],
+                      ['Purchase Date', selectedDevice.purchase_date ? new Date(selectedDevice.purchase_date).toLocaleDateString() : '—'],
+                      ['Assigned User', selectedDevice.assigned_user||'—'],
+                      ['Department', selectedDevice.department||'—'],
+                      ['Location', selectedDevice.location||'—'],
+                      ['Condition', selectedDevice.condition_score ? `${selectedDevice.condition_score}%` : '—'],
+                      ['Disposition', selectedDevice.disposition_status || 'active'],
+                    ].map(([label, val]) => (
+                      <div key={label}><div className="text-xs font-medium mb-1" style={{ color: P.text }}>{label}</div><div className="font-semibold text-sm capitalize" style={{ color: P.navy }}>{val||'—'}</div></div>
+                    ))}
+                  </div>
+                  {selectedDevice.disposition_notes && (
+                    <div className="mt-4 p-3 rounded-lg text-sm" style={{ backgroundColor: P.bg, color: P.text }}>
+                      <span className="font-semibold" style={{ color: P.navy }}>Disposition Notes: </span>{selectedDevice.disposition_notes}
+                    </div>
+                  )}
                 </div>
-                <div className="grid grid-cols-2 gap-6">
-                  {[['Asset Tag', selectedDevice.asset_tag], ['Serial Number', selectedDevice.serial], ['Brand', selectedDevice.brand], ['Monthly Rate', selectedDevice.monthly_rate ? `₦${(selectedDevice.monthly_rate||0).toLocaleString()}/mo` : '—'], ['Assigned User', selectedDevice.assigned_user||'—'], ['Department', selectedDevice.department||'—'], ['Location', selectedDevice.location||'—'], ['Condition', selectedDevice.condition_score ? `${selectedDevice.condition_score}%` : '—']].map(([label, val]) => (
-                    <div key={label}><div className="text-xs font-medium mb-1" style={{ color: P.text }}>{label}</div><div className="font-semibold text-sm" style={{ color: P.navy }}>{val||'—'}</div></div>
-                  ))}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h3 className="text-lg font-bold mb-4" style={{ color: P.navy }}>Specifications</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {[['Processor', selectedDevice.processor], ['RAM', selectedDevice.ram], ['Storage', selectedDevice.storage], ['Screen', selectedDevice.screen_size], ['OS', selectedDevice.os]].map(([l,v]) => v ? (
+                      <div key={l} className="flex items-center space-x-3 p-3 rounded-lg" style={{ backgroundColor: P.bg }}>
+                        <Cpu className="w-4 h-4" style={{ color: P.teal }} />
+                        <div><div className="text-xs" style={{ color: P.text }}>{l}</div><div className="text-sm font-medium" style={{ color: P.navy }}>{v}</div></div>
+                      </div>
+                    ) : null)}
+                  </div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-bold mb-4" style={{ color: P.navy }}>Specifications</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {[['Processor', selectedDevice.processor], ['RAM', selectedDevice.ram], ['Storage', selectedDevice.storage], ['Screen', selectedDevice.screen_size], ['OS', selectedDevice.os]].map(([l,v]) => v ? (
-                    <div key={l} className="flex items-center space-x-3 p-3 rounded-lg" style={{ backgroundColor: P.bg }}>
-                      <Cpu className="w-4 h-4" style={{ color: P.teal }} />
-                      <div><div className="text-xs" style={{ color: P.text }}>{l}</div><div className="text-sm font-medium" style={{ color: P.navy }}>{v}</div></div>
-                    </div>
-                  ) : null)}
-                </div>
+              <div className="space-y-6">
+                <LifecyclePanel device={selectedDevice} onRefresh={async () => {
+                  const updated = await base44.entities.Device.list('-created_date', 200);
+                  setDevices(updated);
+                  const refreshed = updated.find(d => d.id === selectedDevice.id);
+                  if (refreshed) setSelectedDevice(refreshed);
+                }} />
               </div>
             </div>
-            <div className="space-y-6">
+          )}
+
+          {/* LIFECYCLE TAB */}
+          {detailTab === 'lifecycle' && (
+            <div className="max-w-2xl">
               <LifecyclePanel device={selectedDevice} onRefresh={async () => {
                 const updated = await base44.entities.Device.list('-created_date', 200);
                 setDevices(updated);
                 const refreshed = updated.find(d => d.id === selectedDevice.id);
                 if (refreshed) setSelectedDevice(refreshed);
               }} />
+              {/* Key dates summary */}
+              <div className="mt-6 bg-white rounded-xl shadow-sm p-6">
+                <h3 className="font-bold mb-4" style={{ color: P.navy }}>All Lifecycle Dates</h3>
+                <div className="space-y-3">
+                  {[
+                    ['Purchase Date', selectedDevice.purchase_date],
+                    ['Lease Start', selectedDevice.lease_start],
+                    ['Lease End', selectedDevice.lease_end],
+                    ['Warranty Expiry', selectedDevice.warranty_expiry],
+                    ['Scheduled Refresh', selectedDevice.refresh_date],
+                    ['End-of-Life Date', selectedDevice.end_of_life_date],
+                    ['Disposition Date', selectedDevice.disposition_date],
+                  ].map(([label, val]) => (
+                    <div key={label} className="flex items-center justify-between py-2" style={{ borderBottom: `1px solid ${P.border}` }}>
+                      <span className="text-sm" style={{ color: P.text }}>{label}</span>
+                      <span className="text-sm font-semibold" style={{ color: val ? P.navy : P.border }}>{val ? new Date(val).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Not set'}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* HISTORY TAB */}
+          {detailTab === 'history' && (
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h3 className="text-lg font-bold mb-5" style={{ color: P.navy }}>Device History</h3>
+              <DeviceHistoryTab device={selectedDevice} />
+            </div>
+          )}
         </div>
       </div>
     );
