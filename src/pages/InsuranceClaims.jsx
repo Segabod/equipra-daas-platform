@@ -167,16 +167,18 @@ export default function InsuranceClaims() {
   };
 
   const handleManagerApproval = async (claim, approved) => {
+    const newStatus = approved ? 'approved' : 'rejected';
     const updates = {
       manager_approved: approved,
       manager_approved_by: user?.full_name || user?.email || 'Manager',
       manager_approval_notes: managerNotes,
       manager_approval_date: new Date().toISOString().split('T')[0],
-      status: approved ? 'approved' : 'rejected',
+      status: newStatus,
       ...((!approved && rejectionReason) ? { rejection_reason: rejectionReason } : {}),
     };
     await base44.entities.InsuranceClaim.update(claim.id, updates);
     await logAudit({ action: approved ? 'approve' : 'reject', entityType: 'InsuranceClaim', entityId: claim.id, entityLabel: claim.claim_number, details: `Manager ${approved ? 'approved' : 'rejected'} high-value claim${managerNotes ? `: ${managerNotes}` : ''}` });
+    sendClaimNotification(claim, newStatus, { rejection_reason: rejectionReason });
     const updated = await base44.entities.InsuranceClaim.list('-created_date', 100);
     setClaims(updated);
     const freshClaim = updated.find(c => c.id === claim.id);
