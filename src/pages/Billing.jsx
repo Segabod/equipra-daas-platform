@@ -62,10 +62,9 @@ export default function Billing() {
     const vat = (subtotal + creditsTotal) * 0.075;
     const total = Math.round(subtotal + creditsTotal + vat);
 
-    const response = await base44.functions.invoke('paystackCheckout', {
+    const response = await base44.functions.invoke('createInvoiceCheckout', {
       invoiceId: inv.id,
       amount: total,
-      email: 'billing@equipraafrica.ng',
       description: `${inv.month} DaaS Subscription — ${inv.id}`,
     });
     setPayingId(null);
