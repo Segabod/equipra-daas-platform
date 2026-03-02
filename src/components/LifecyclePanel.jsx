@@ -26,6 +26,7 @@ export default function LifecyclePanel({ device, onRefresh }) {
   const leaseDays = daysUntil(device.lease_end);
   const warrantyDays = daysUntil(device.warranty_expiry);
   const refreshDays = daysUntil(device.refresh_date);
+  const eolDays = daysUntil(device.end_of_life_date);
 
   const lifecycleItems = [
     {
@@ -37,8 +38,8 @@ export default function LifecyclePanel({ device, onRefresh }) {
       actionLabel: 'Initiate Renewal',
     },
     {
-      label: 'Warranty',
-      value: device.warranty || (device.warranty_expiry ? `Expires ${new Date(device.warranty_expiry).toLocaleDateString()}` : null),
+      label: 'Warranty Expiry',
+      value: device.warranty_expiry ? new Date(device.warranty_expiry).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : (device.warranty || null),
       days: warrantyDays,
       icon: Shield,
       action: 'warranty_renewal',
@@ -59,6 +60,14 @@ export default function LifecyclePanel({ device, onRefresh }) {
       icon: RefreshCw,
       action: 'replacement',
       actionLabel: 'Request Replacement',
+    },
+    {
+      label: 'End-of-Life',
+      value: device.end_of_life_date ? new Date(device.end_of_life_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : null,
+      days: eolDays,
+      icon: AlertTriangle,
+      action: 'replacement',
+      actionLabel: 'Plan Disposition',
     },
   ];
 
