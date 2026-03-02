@@ -280,6 +280,7 @@ export default function ClaimsAnalytics() {
             </div>
           </div>
         )}
+        )}
       </div>
     </div>
   );
