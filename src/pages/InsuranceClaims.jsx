@@ -29,6 +29,20 @@ const STATUS_CONFIG = {
 
 const MANAGER_THRESHOLD = 500000; // ₦500,000
 
+// Required documents per incident type
+const REQUIRED_DOCS = {
+  theft:            ['Police Report (signed & stamped)', 'Proof of Ownership / Purchase Receipt'],
+  loss:             ['Police Report (signed & stamped)', 'Proof of Ownership / Purchase Receipt'],
+  accidental_damage:['Photos of Damage (min. 2 images)', 'Proof of Ownership / Purchase Receipt'],
+  liquid_damage:    ['Photos of Damage (min. 2 images)', 'Proof of Ownership / Purchase Receipt'],
+  screen_crack:     ['Photos of Damage (min. 2 images)'],
+  fire:             ['Fire / Incident Report', 'Photos of Damage'],
+  power_surge:      ['Photos of Damage', 'Technician Assessment Report'],
+  other:            ['Supporting Evidence / Documentation'],
+};
+
+const ALL_ALWAYS = ['Device Assignment Confirmation']; // always required
+
 export default function InsuranceClaims() {
   const [view, setView] = useState('list'); // 'list' | 'new'
   const [step, setStep] = useState(1);
