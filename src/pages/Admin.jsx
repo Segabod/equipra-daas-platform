@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Users, Monitor, AlertCircle, CheckCircle, DollarSign, Clock, Package, TrendingUp, BarChart3, ChevronRight, Shield } from 'lucide-react';
+import { Users, Monitor, AlertCircle, CheckCircle, DollarSign, Clock, Package, TrendingUp, BarChart3, ChevronRight, Shield, CreditCard } from 'lucide-react';
 import UserRoleManager from '../components/UserRoleManager';
 import AuditLogPanel from '../components/AuditLogPanel';
+import BillingDashboard from '../components/admin/BillingDashboard';
 
 const P = { navy: '#0B1F3A', teal: '#0FA3B1', gold: '#D4AF37', bg: '#F7F9FC', text: '#2E3440', border: '#E1E6EF' };
 

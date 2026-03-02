@@ -48,35 +48,35 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Admin from './pages/Admin';
+import Analytics from './pages/Analytics';
 import Billing from './pages/Billing';
 import Dashboard from './pages/Dashboard';
+import DeviceHealth from './pages/DeviceHealth';
 import Devices from './pages/Devices';
 import Home from './pages/Home';
-import Requests from './pages/Requests';
-import Tickets from './pages/Tickets';
-import RequestHistory from './pages/RequestHistory';
-import Reports from './pages/Reports';
-import DeviceHealth from './pages/DeviceHealth';
 import Onboarding from './pages/Onboarding';
 import Procurement from './pages/Procurement';
-import Analytics from './pages/Analytics';
+import Reports from './pages/Reports';
+import RequestHistory from './pages/RequestHistory';
+import Requests from './pages/Requests';
+import Tickets from './pages/Tickets';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Admin": Admin,
+    "Analytics": Analytics,
     "Billing": Billing,
     "Dashboard": Dashboard,
+    "DeviceHealth": DeviceHealth,
     "Devices": Devices,
     "Home": Home,
-    "Requests": Requests,
-    "Tickets": Tickets,
-    "RequestHistory": RequestHistory,
-    "Reports": Reports,
-    "DeviceHealth": DeviceHealth,
     "Onboarding": Onboarding,
     "Procurement": Procurement,
-    "Analytics": Analytics,
+    "Reports": Reports,
+    "RequestHistory": RequestHistory,
+    "Requests": Requests,
+    "Tickets": Tickets,
 }
 
 export const pagesConfig = {
