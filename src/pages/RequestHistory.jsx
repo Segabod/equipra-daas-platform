@@ -43,18 +43,22 @@ export default function RequestHistory() {
   const handleApprove = async (req, action) => {
     setApproving(req.id);
     const newStatus = action === 'approve' ? 'approved' : 'rejected';
-    await base44.entities.DeviceRequest.update(req.id, { status: newStatus });
-    await logAudit({ action: action === 'approve' ? 'approve' : 'reject', entityType: 'DeviceRequest', entityId: req.id, entityLabel: `REQ-${req.id?.slice(-4)?.toUpperCase()}`, details: `Request ${newStatus}`, oldValue: req.status, newValue: newStatus });
+    const updateData = { status: newStatus };
+    if (action === 'reject' && rejectReason.trim()) updateData.rejection_reason = rejectReason.trim();
+    await base44.entities.DeviceRequest.update(req.id, updateData);
+    await logAudit({ action: action === 'approve' ? 'approve' : 'reject', entityType: 'DeviceRequest', entityId: req.id, entityLabel: `REQ-${req.id?.slice(-4)?.toUpperCase()}`, details: `Request ${newStatus}${action === 'reject' && rejectReason ? `: ${rejectReason}` : ''}`, oldValue: req.status, newValue: newStatus });
     await base44.entities.Notification.create({
       user_email: req.created_by || 'admin',
       title: `Request ${newStatus === 'approved' ? 'Approved ✅' : 'Rejected ❌'}`,
-      message: `Your device request (REQ-${req.id?.slice(-4)?.toUpperCase()}) has been ${newStatus} by ${req.approver || 'an approver'}.`,
+      message: `Your device request (REQ-${req.id?.slice(-4)?.toUpperCase()}) has been ${newStatus} by ${req.approver || 'an approver'}.${action === 'reject' && rejectReason ? ` Reason: ${rejectReason}` : ''}`,
       type: 'request_status_change',
       link_page: 'RequestHistory',
     });
     await load();
     setSelected(null);
     setApproving(null);
+    setRejectReason('');
+    setShowRejectInput(false);
   };
 
   const filtered = requests
