@@ -134,6 +134,7 @@ export default function InsuranceClaims() {
     setTimeout(() => {
       setView('list'); setStep(1); setSelectedDevice(null); setDeviceSearch('');
       setForm({ incidentType: '', incidentDate: '', incidentLocation: '', incidentDescription: '', policeReport: '', estimatedValue: '', needsPoliceReport: false });
+      setUploadedDocs([]);
       setSuccess(false);
     }, 2500);
   };
