@@ -64,6 +64,7 @@ export default function InsuranceClaims() {
   const [uploadedDocs, setUploadedDocs] = useState([]); // [{label, file, url, uploading}]
   const fileInputRef = useRef(null);
   const [activeUploadLabel, setActiveUploadLabel] = useState(null);
+  const [detailTab, setDetailTab] = useState('details'); // 'details' | 'history'
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
   const [form, setForm] = useState({
