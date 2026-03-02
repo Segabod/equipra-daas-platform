@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { label: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
   { label: 'Devices', page: 'Devices', icon: Package },
   { label: 'Requests', page: 'Requests', icon: FileText },
+  { label: 'Req. History', page: 'RequestHistory', icon: BarChart3 },
   { label: 'Tickets', page: 'Tickets', icon: Wrench },
   { label: 'Billing', page: 'Billing', icon: BarChart3 },
   { label: 'Admin', page: 'Admin', icon: Settings },
