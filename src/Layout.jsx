@@ -21,8 +21,15 @@ const ALL_NAV_ITEMS = [
 
 export default function Layout({ children, currentPageName }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState(null);
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
+  useEffect(() => {
+    if (!profileOpen) return;
+    const close = (e) => { if (!e.target.closest('#profile-menu')) setProfileOpen(false); };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [profileOpen]);
 
   const userRole = user?.role || 'user';
   const NAV_ITEMS = ALL_NAV_ITEMS.filter(item => item.roles.includes(userRole));
