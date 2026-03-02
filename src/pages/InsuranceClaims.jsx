@@ -300,48 +300,86 @@ export default function InsuranceClaims() {
               {/* Step 3: Supporting Info */}
               {step === 3 && (
                 <div>
-                  <h2 className="text-2xl font-bold mb-6" style={{ color: P.navy }}>Supporting Information</h2>
-                  <div className="space-y-5">
-                    <div>
-                      <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Estimated Device Value (₦)</label>
-                      <input type="number" value={form.estimatedValue} onChange={e => setForm({ ...form, estimatedValue: e.target.value })} placeholder="e.g. 850000" className="w-full px-4 py-3 border-2 rounded-xl text-sm" style={{ borderColor: P.border }} />
-                      <p className="text-xs mt-1" style={{ color: P.text }}>Approximate current replacement value of the device</p>
-                    </div>
-                    {requiresPoliceReport && (
-                      <div className="p-4 rounded-xl" style={{ backgroundColor: '#FEF3C7', border: '1px solid #F59E0B40' }}>
-                        <div className="flex items-start gap-2 mb-3">
-                          <AlertCircle className="w-4 h-4 mt-0.5" style={{ color: '#D97706' }} />
-                          <div>
-                            <div className="font-semibold text-sm" style={{ color: P.navy }}>Police Report Required</div>
-                            <p className="text-xs mt-0.5" style={{ color: P.text }}>Theft and loss claims require a police report number for processing.</p>
-                          </div>
-                        </div>
-                        <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Police Report Number <span className="text-red-500">*</span></label>
-                        <input type="text" value={form.policeReport} onChange={e => setForm({ ...form, policeReport: e.target.value })} placeholder="e.g. LPS/2026/001234" className="w-full px-4 py-3 border-2 rounded-xl text-sm bg-white" style={{ borderColor: P.border }} />
-                      </div>
-                    )}
-                    <div className="p-4 rounded-xl" style={{ backgroundColor: P.bg }}>
-                      <div className="font-semibold text-sm mb-2" style={{ color: P.navy }}>Document Checklist</div>
-                      <div className="space-y-2">
-                        {[
-                          'Photos/evidence of damage (if applicable)',
-                          requiresPoliceReport ? 'Police report (required)' : 'Purchase receipt or proof of ownership',
-                          'Incident report form (if workplace incident)',
-                        ].map((item, i) => (
-                          <div key={i} className="flex items-center gap-2 text-sm" style={{ color: P.text }}>
-                            <div className="w-4 h-4 rounded border-2 flex items-center justify-center" style={{ borderColor: P.teal }}>
-                              <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: P.teal }} />
-                            </div>
-                            {item}
-                          </div>
-                        ))}
-                      </div>
-                      <p className="text-xs mt-3" style={{ color: P.text }}>Please email supporting documents to <span className="font-semibold" style={{ color: P.teal }}>claims@equipraafrica.ng</span> referencing your claim number after submission.</p>
-                    </div>
+                  <h2 className="text-2xl font-bold mb-1" style={{ color: P.navy }}>Supporting Documents</h2>
+                  <p className="mb-6 text-sm" style={{ color: P.text }}>Upload all required documents to proceed. These are mandatory for claim processing.</p>
+
+                  {/* Estimated Value */}
+                  <div className="mb-6">
+                    <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Estimated Device Value (₦)</label>
+                    <input type="number" value={form.estimatedValue} onChange={e => setForm({ ...form, estimatedValue: e.target.value })} placeholder="e.g. 850000" className="w-full px-4 py-3 border-2 rounded-xl text-sm" style={{ borderColor: P.border }} />
+                    <p className="text-xs mt-1" style={{ color: P.text }}>Approximate current replacement value of the device</p>
                   </div>
-                  <div className="flex justify-between pt-6 mt-6" style={{ borderTop: `1px solid ${P.border}` }}>
+
+                  {/* Police Report field for theft/loss */}
+                  {requiresPoliceReport && (
+                    <div className="p-4 rounded-xl mb-6" style={{ backgroundColor: '#FEF3C7', border: '1px solid #F59E0B40' }}>
+                      <div className="flex items-start gap-2 mb-3">
+                        <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#D97706' }} />
+                        <div>
+                          <div className="font-semibold text-sm" style={{ color: P.navy }}>Police Report Reference Required</div>
+                          <p className="text-xs mt-0.5" style={{ color: P.text }}>Theft and loss claims require a police report number.</p>
+                        </div>
+                      </div>
+                      <label className="block text-sm font-semibold mb-2" style={{ color: P.navy }}>Police Report Number <span className="text-red-500">*</span></label>
+                      <input type="text" value={form.policeReport} onChange={e => setForm({ ...form, policeReport: e.target.value })} placeholder="e.g. LPS/2026/001234" className="w-full px-4 py-3 border-2 rounded-xl text-sm bg-white" style={{ borderColor: P.border }} />
+                    </div>
+                  )}
+
+                  {/* Required Documents Upload */}
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold" style={{ color: P.navy }}>Required Documents</span>
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: allDocsUploaded ? '#D1FAE5' : '#FEE2E2', color: allDocsUploaded ? '#059669' : '#DC2626' }}>
+                        {uploadedDocs.filter(d => d.url && requiredDocLabels.includes(d.label)).length} / {requiredDocLabels.length} uploaded
+                      </span>
+                    </div>
+
+                    {/* Hidden file input */}
+                    <input ref={fileInputRef} type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                      onChange={e => { if (e.target.files[0] && activeUploadLabel) { handleFileUpload(activeUploadLabel, e.target.files[0]); e.target.value = ''; } }} />
+
+                    {requiredDocLabels.map(label => {
+                      const doc = uploadedDocs.find(d => d.label === label);
+                      const uploaded = doc?.url;
+                      const uploading = doc?.uploading;
+                      return (
+                        <div key={label} className="flex items-center gap-3 p-3 rounded-xl border-2" style={{ borderColor: uploaded ? '#10B981' : '#E5E7EB', backgroundColor: uploaded ? '#F0FDF4' : 'white' }}>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              {uploaded ? <Check className="w-4 h-4 flex-shrink-0 text-green-500" /> : <Paperclip className="w-4 h-4 flex-shrink-0" style={{ color: P.text }} />}
+                              <span className="text-sm font-medium truncate" style={{ color: uploaded ? '#065F46' : P.navy }}>{label}</span>
+                              <span className="text-xs text-red-500 flex-shrink-0">*</span>
+                            </div>
+                            {doc && !uploading && <p className="text-xs mt-0.5 ml-6 truncate" style={{ color: '#6B7280' }}>{doc.file}</p>}
+                          </div>
+                          {uploading ? (
+                            <Loader2 className="w-5 h-5 animate-spin flex-shrink-0" style={{ color: P.teal }} />
+                          ) : uploaded ? (
+                            <button onClick={() => handleRemoveDoc(label)} className="p-1.5 rounded-lg hover:bg-red-50 flex-shrink-0">
+                              <Trash2 className="w-4 h-4 text-red-400" />
+                            </button>
+                          ) : (
+                            <button onClick={() => { setActiveUploadLabel(label); fileInputRef.current?.click(); }}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white flex-shrink-0"
+                              style={{ backgroundColor: P.teal }}>
+                              <Upload className="w-3.5 h-3.5" /> Upload
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {!allDocsUploaded && (
+                    <div className="flex items-start gap-2 p-3 rounded-xl mb-4" style={{ backgroundColor: '#FEF3C7' }}>
+                      <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#D97706' }} />
+                      <p className="text-xs" style={{ color: '#92400E' }}>All documents marked with * are mandatory. Please upload them before proceeding.</p>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between pt-4" style={{ borderTop: `1px solid ${P.border}` }}>
                     <button onClick={() => setStep(2)} className="px-6 py-3 rounded-xl font-medium" style={{ color: P.navy }}>Back</button>
-                    <button onClick={() => setStep(4)} disabled={requiresPoliceReport && !form.policeReport}
+                    <button onClick={() => setStep(4)} disabled={(requiresPoliceReport && !form.policeReport) || !allDocsUploaded}
                       className="px-8 py-3 rounded-xl font-semibold text-white disabled:opacity-50" style={{ backgroundColor: P.teal }}>Review Claim</button>
                   </div>
                 </div>
