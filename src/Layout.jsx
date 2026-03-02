@@ -40,6 +40,7 @@ export default function Layout({ children, currentPageName }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [chatOpen, setChatOpen] = useState(false);
   const [user, setUser] = useState(null);
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
   useEffect(() => {
