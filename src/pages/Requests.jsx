@@ -87,6 +87,69 @@ const ACCESSORIES = [...PAID_ACCESSORIES.map(a => a.name), ...FREE_ACCESSORIES];
 
 const STEPS = ['Request Info', 'Device Class', 'Specifications', 'Service Bundle', 'Review'];
 
+const CLASS_PRICES = { standard: 85000, developer: 145000, executive: 185000 };
+const BUNDLE_PRICES = { standard: 0, premium: 8000, executive: 15000 };
+
+function calcTotal(form) {
+  const classPrice = CLASS_PRICES[form.deviceClass] || 0;
+  const bundlePrice = BUNDLE_PRICES[form.serviceBundle] || 0;
+  const accessoryPrice = form.accessories.reduce((sum, name) => {
+    const found = PAID_ACCESSORIES.find(a => a.name === name);
+    return sum + (found ? found.price : 0);
+  }, 0);
+  const perDevice = classPrice + bundlePrice + accessoryPrice;
+  const subtotal = perDevice * (form.quantity || 1);
+  const vat = subtotal * 0.075;
+  return { classPrice, bundlePrice, accessoryPrice, perDevice, subtotal, vat, total: subtotal + vat };
+}
+
+function CostSummary({ form }) {
+  const { classPrice, bundlePrice, accessoryPrice, perDevice, subtotal, vat, total } = calcTotal(form);
+  if (!form.deviceClass) return null;
+  const selectedAccessories = PAID_ACCESSORIES.filter(a => form.accessories.includes(a.name));
+  return (
+    <div className="rounded-xl p-5" style={{ backgroundColor: '#0B1F3A', color: 'white' }}>
+      <h4 className="text-sm font-bold mb-4" style={{ color: '#0FA3B1' }}>💰 Cost Preview</h4>
+      <div className="space-y-2 text-sm">
+        <div className="flex justify-between">
+          <span style={{ color: 'rgba(255,255,255,0.7)' }}>Device ({DEVICE_CLASSES.find(d=>d.value===form.deviceClass)?.label})</span>
+          <span>₦{classPrice.toLocaleString()}/mo</span>
+        </div>
+        {bundlePrice > 0 && (
+          <div className="flex justify-between">
+            <span style={{ color: 'rgba(255,255,255,0.7)' }}>SLA Bundle</span>
+            <span>+₦{bundlePrice.toLocaleString()}/mo</span>
+          </div>
+        )}
+        {selectedAccessories.map(a => (
+          <div key={a.name} className="flex justify-between text-xs">
+            <span style={{ color: 'rgba(255,255,255,0.6)' }}>{a.name}</span>
+            <span style={{ color: '#D4AF37' }}>+₦{a.price.toLocaleString()}/mo</span>
+          </div>
+        ))}
+        <div className="flex justify-between pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+          <span style={{ color: 'rgba(255,255,255,0.7)' }}>Per Device/mo</span>
+          <span className="font-semibold" style={{ color: '#0FA3B1' }}>₦{perDevice.toLocaleString()}</span>
+        </div>
+        {form.quantity > 1 && (
+          <div className="flex justify-between text-xs">
+            <span style={{ color: 'rgba(255,255,255,0.6)' }}>× {form.quantity} devices</span>
+            <span>₦{subtotal.toLocaleString()}/mo</span>
+          </div>
+        )}
+        <div className="flex justify-between text-xs">
+          <span style={{ color: 'rgba(255,255,255,0.6)' }}>VAT (7.5%)</span>
+          <span>₦{vat.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+        </div>
+        <div className="flex justify-between pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+          <span className="font-bold">Total/mo</span>
+          <span className="text-lg font-black" style={{ color: '#D4AF37' }}>₦{total.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Requests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
