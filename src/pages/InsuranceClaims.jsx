@@ -684,7 +684,10 @@ export default function InsuranceClaims() {
                         {c.estimated_value ? `₦${Number(c.estimated_value).toLocaleString()}` : '—'}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="px-2 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: sc.bg, color: sc.color }}>{sc.label}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="px-2 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: sc.bg, color: sc.color }}>{sc.label}</span>
+                          {c.supporting_docs && <Paperclip className="w-3.5 h-3.5" style={{ color: P.teal }} title="Has attachments" />}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <button onClick={() => setDetailClaim(c)} className="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ backgroundColor: P.teal }}>
