@@ -129,7 +129,13 @@ export default function ClaimsAnalytics() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {loading ? (
+        {!['admin', 'it_admin', 'manager', 'claims_manager'].includes(user?.role) ? (
+          <div className="bg-white rounded-xl shadow-sm p-16 text-center">
+            <AlertCircle className="w-12 h-12 mx-auto mb-4" style={{ color: '#D97706' }} />
+            <p className="font-semibold text-lg" style={{ color: P.navy }}>Access Denied</p>
+            <p className="text-sm mt-2" style={{ color: P.text }}>You don't have permission to view claims analytics. Contact your administrator.</p>
+          </div>
+        ) : loading ? (
           <div className="text-center py-16" style={{ color: P.text }}>Loading analytics...</div>
         ) : (
           <div className="space-y-8">
