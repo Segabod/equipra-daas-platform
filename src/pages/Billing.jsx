@@ -84,6 +84,77 @@ export default function Billing() {
     }
   };
 
+  const handleExportStatement = (format) => {
+    if (format === 'csv') {
+      const headers = ['Invoice ID', 'Period', 'Issue Date', 'Due Date', 'Amount', 'Status'];
+      const rows = INVOICES.map(inv => [
+        inv.id,
+        inv.month,
+        new Date(inv.issueDate).toLocaleDateString(),
+        new Date(inv.dueDate).toLocaleDateString(),
+        `₦${inv.amount.toLocaleString()}`,
+        inv.status.toUpperCase(),
+      ]);
+      const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Statement_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } else if (format === 'pdf') {
+      const html = `
+        <html>
+          <head>
+            <title>Billing Statement</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 40px; }
+              h1 { color: #0B1F3A; }
+              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+              th, td { border: 1px solid #E1E6EF; padding: 10px; text-align: left; }
+              th { background-color: #F7F9FC; font-weight: bold; }
+              .total { font-weight: bold; }
+            </style>
+          </head>
+          <body>
+            <h1>Billing Statement</h1>
+            <p>Generated: ${new Date().toLocaleDateString()}</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Invoice ID</th>
+                  <th>Period</th>
+                  <th>Issue Date</th>
+                  <th>Due Date</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${INVOICES.map(inv => `
+                  <tr>
+                    <td>${inv.id}</td>
+                    <td>${inv.month}</td>
+                    <td>${new Date(inv.issueDate).toLocaleDateString()}</td>
+                    <td>${new Date(inv.dueDate).toLocaleDateString()}</td>
+                    <td>₦${inv.amount.toLocaleString()}</td>
+                    <td>${inv.status.toUpperCase()}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </body>
+        </html>
+      `;
+      const printWindow = window.open('', '', 'height=600,width=800');
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.print();
+    }
+    setExportFormat(null);
+  };
+
   if (selectedInvoice) {
     const inv = selectedInvoice;
     const subtotal = inv.devices.reduce((sum, d) => sum + (d.rate * d.days / 30), 0);
