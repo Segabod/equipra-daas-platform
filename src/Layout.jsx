@@ -24,6 +24,8 @@ export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
+  const userRole = user?.role || 'user';
+  const NAV_ITEMS = ALL_NAV_ITEMS.filter(item => item.roles.includes(userRole));
   const isPublicPage = currentPageName === 'Home';
 
   return (
