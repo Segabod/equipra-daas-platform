@@ -89,6 +89,7 @@ export default function InsuranceClaims() {
       police_report_number: form.policeReport || undefined,
       estimated_value: form.estimatedValue ? Number(form.estimatedValue) : undefined,
       status: 'submitted',
+      requires_manager_approval: form.estimatedValue ? Number(form.estimatedValue) >= MANAGER_THRESHOLD : false,
     });
     await logAudit({ action: 'create', entityType: 'InsuranceClaim', entityId: claim?.id, entityLabel: claimNum, details: `Insurance claim submitted for ${selectedDevice.model} (${selectedDevice.asset_tag})` });
     const updated = await base44.entities.InsuranceClaim.list('-created_date', 100);
