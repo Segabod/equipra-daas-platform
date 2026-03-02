@@ -660,7 +660,9 @@ export default function InsuranceClaims() {
                   </p>
                 )}
                 </div>
-                </div>
+                ) : (
+                <ClaimHistoryTimeline claimId={detailClaim.id} />
+                )}
                 </div>
                 </div>
                 )}
