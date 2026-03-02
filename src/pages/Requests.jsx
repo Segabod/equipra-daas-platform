@@ -97,17 +97,34 @@ const STEPS = ['Request Info', 'Device Class', 'Specifications', 'Service Bundle
 const CLASS_PRICES = { standard: 85000, developer: 145000, executive: 185000 };
 const BUNDLE_PRICES = { standard: 0, premium: 8000, executive: 15000 };
 
-function calcTotal(form) {
+// Depreciation schedule: year 1 is 100%, year 2 is 80%, year 3+ is 60%
+const DEPRECIATION_BY_YEAR = {
+  1: 1.0,    // Year 1: 100% of price
+  2: 0.8,    // Year 2: 80% of price
+  3: 0.6,    // Year 3+: 60% of price
+};
+
+function getDepreciationMultiplier(yearNumber) {
+  if (yearNumber <= 0) return DEPRECIATION_BY_YEAR[1];
+  if (yearNumber >= 3) return DEPRECIATION_BY_YEAR[3];
+  return DEPRECIATION_BY_YEAR[yearNumber];
+}
+
+function calcTotal(form, yearNumber = 1) {
   const classPrice = CLASS_PRICES[form.deviceClass] || 0;
   const bundlePrice = BUNDLE_PRICES[form.serviceBundle] || 0;
+  const depreciationMultiplier = getDepreciationMultiplier(yearNumber);
+  const depreciatedClassPrice = Math.round(classPrice * depreciationMultiplier);
+  
   const accessoryPrice = form.accessories.reduce((sum, name) => {
     const found = PAID_ACCESSORIES.find(a => a.name === name);
     return sum + (found ? found.price : 0);
   }, 0);
-  const perDevice = classPrice + bundlePrice + accessoryPrice;
+  
+  const perDevice = depreciatedClassPrice + bundlePrice + accessoryPrice;
   const subtotal = perDevice * (form.quantity || 1);
   const vat = subtotal * 0.075;
-  return { classPrice, bundlePrice, accessoryPrice, perDevice, subtotal, vat, total: subtotal + vat };
+  return { classPrice: depreciatedClassPrice, bundlePrice, accessoryPrice, perDevice, subtotal, vat, total: subtotal + vat, depreciationMultiplier, originalPrice: CLASS_PRICES[form.deviceClass] };
 }
 
 function CostSummary({ form }) {
