@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Shield, Plus, Search, FileText, X, Check, CheckCircle, AlertCircle, Clock, Eye, ChevronRight, Upload, Paperclip, Trash2, Loader2 } from 'lucide-react';
 import { logAudit } from '../components/audit';
-import ClaimHistoryTimeline from '../components/ClaimHistoryTimeline';
 
 const P = { navy: '#0B1F3A', teal: '#0FA3B1', gold: '#D4AF37', bg: '#F7F9FC', text: '#2E3440', border: '#E1E6EF' };
 
@@ -64,7 +63,6 @@ export default function InsuranceClaims() {
   const [uploadedDocs, setUploadedDocs] = useState([]); // [{label, file, url, uploading}]
   const fileInputRef = useRef(null);
   const [activeUploadLabel, setActiveUploadLabel] = useState(null);
-  const [detailTab, setDetailTab] = useState('details'); // 'details' | 'history'
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
   const [form, setForm] = useState({
@@ -484,48 +482,21 @@ export default function InsuranceClaims() {
       {/* Detail Modal */}
       {detailClaim && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="p-5 flex items-center justify-between" style={{ borderBottom: `1px solid ${P.border}` }}>
               <div>
                 <h2 className="text-lg font-bold" style={{ color: P.navy }}>{detailClaim.claim_number}</h2>
                 <p className="text-sm" style={{ color: P.text }}>{detailClaim.device_model} · {detailClaim.device_asset_tag}</p>
               </div>
-              <button onClick={() => { setDetailClaim(null); setDetailTab('details'); }}><X className="w-5 h-5" style={{ color: P.text }} /></button>
+              <button onClick={() => setDetailClaim(null)}><X className="w-5 h-5" style={{ color: P.text }} /></button>
             </div>
-
-            {/* Tabs */}
-            <div className="flex gap-2 px-5 pt-4 border-b" style={{ borderColor: P.border }}>
-              <button
-                onClick={() => setDetailTab('details')}
-                className="px-4 py-2 text-sm font-semibold border-b-2 transition-colors"
-                style={{
-                  borderColor: detailTab === 'details' ? P.teal : 'transparent',
-                  color: detailTab === 'details' ? P.teal : P.text
-                }}
-              >
-                Details
-              </button>
-              <button
-                onClick={() => setDetailTab('history')}
-                className="px-4 py-2 text-sm font-semibold border-b-2 transition-colors"
-                style={{
-                  borderColor: detailTab === 'history' ? P.teal : 'transparent',
-                  color: detailTab === 'history' ? P.teal : P.text
-                }}
-              >
-                History
-              </button>
-            </div>
-
-            <div className="p-5 space-y-4 overflow-y-auto flex-1">
-              {detailTab === 'details' ? (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: P.text }}>Status</span>
-                    <span className="px-3 py-1 rounded-full text-sm font-semibold" style={{ backgroundColor: STATUS_CONFIG[detailClaim.status]?.bg, color: STATUS_CONFIG[detailClaim.status]?.color }}>
-                      {STATUS_CONFIG[detailClaim.status]?.label}
-                    </span>
-                  </div>
+            <div className="p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm" style={{ color: P.text }}>Status</span>
+                <span className="px-3 py-1 rounded-full text-sm font-semibold" style={{ backgroundColor: STATUS_CONFIG[detailClaim.status]?.bg, color: STATUS_CONFIG[detailClaim.status]?.color }}>
+                  {STATUS_CONFIG[detailClaim.status]?.label}
+                </span>
+              </div>
               {[
                 ['Incident Type', INCIDENT_TYPES.find(i => i.value === detailClaim.incident_type)?.label],
                 ['Incident Date', detailClaim.incident_date ? new Date(detailClaim.incident_date).toLocaleDateString() : '—'],
@@ -659,13 +630,11 @@ export default function InsuranceClaims() {
                     💡 To approve this claim, set status to "Pending Mgr Approval" — a manager will then review it.
                   </p>
                 )}
-                </div>
-                ) : (
-                <ClaimHistoryTimeline claimId={detailClaim.id} />
-                )}
-                </div>
-                </div>
-                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">

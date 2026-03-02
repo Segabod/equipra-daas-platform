@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, Download, CheckCircle, Clock, AlertCircle, TrendingUp, Eye, FileText, CreditCard, Package, ChevronDown } from 'lucide-react';
+import { DollarSign, Download, CheckCircle, Clock, AlertCircle, TrendingUp, Eye, FileText, CreditCard, Package } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const P = { navy: '#0B1F3A', teal: '#0FA3B1', gold: '#D4AF37', bg: '#F7F9FC', text: '#2E3440', border: '#E1E6EF' };
@@ -42,7 +42,6 @@ export default function Billing() {
   const [paidInvoices, setPaidInvoices] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [expandedRequest, setExpandedRequest] = useState(null);
-  const [exportFormat, setExportFormat] = useState(null);
 
   useEffect(() => {
     base44.entities.DeviceRequest.filter({ status: 'approved' }, '-created_date', 20)
@@ -84,77 +83,6 @@ export default function Billing() {
     }
   };
 
-  const handleExportStatement = (format) => {
-    if (format === 'csv') {
-      const headers = ['Invoice ID', 'Period', 'Issue Date', 'Due Date', 'Amount', 'Status'];
-      const rows = INVOICES.map(inv => [
-        inv.id,
-        inv.month,
-        new Date(inv.issueDate).toLocaleDateString(),
-        new Date(inv.dueDate).toLocaleDateString(),
-        `₦${inv.amount.toLocaleString()}`,
-        inv.status.toUpperCase(),
-      ]);
-      const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Statement_${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } else if (format === 'pdf') {
-      const html = `
-        <html>
-          <head>
-            <title>Billing Statement</title>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 40px; }
-              h1 { color: #0B1F3A; }
-              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-              th, td { border: 1px solid #E1E6EF; padding: 10px; text-align: left; }
-              th { background-color: #F7F9FC; font-weight: bold; }
-              .total { font-weight: bold; }
-            </style>
-          </head>
-          <body>
-            <h1>Billing Statement</h1>
-            <p>Generated: ${new Date().toLocaleDateString()}</p>
-            <table>
-              <thead>
-                <tr>
-                  <th>Invoice ID</th>
-                  <th>Period</th>
-                  <th>Issue Date</th>
-                  <th>Due Date</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${INVOICES.map(inv => `
-                  <tr>
-                    <td>${inv.id}</td>
-                    <td>${inv.month}</td>
-                    <td>${new Date(inv.issueDate).toLocaleDateString()}</td>
-                    <td>${new Date(inv.dueDate).toLocaleDateString()}</td>
-                    <td>₦${inv.amount.toLocaleString()}</td>
-                    <td>${inv.status.toUpperCase()}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </body>
-        </html>
-      `;
-      const printWindow = window.open('', '', 'height=600,width=800');
-      printWindow.document.write(html);
-      printWindow.document.close();
-      printWindow.print();
-    }
-    setExportFormat(null);
-  };
-
   if (selectedInvoice) {
     const inv = selectedInvoice;
     const subtotal = inv.devices.reduce((sum, d) => sum + (d.rate * d.days / 30), 0);
@@ -175,120 +103,7 @@ export default function Billing() {
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <button 
-                onClick={() => {
-                  const html = `
-                    <html>
-                      <head>
-                        <title>${inv.id}</title>
-                        <style>
-                          body { font-family: Arial, sans-serif; margin: 40px; color: #2E3440; }
-                          .header { display: flex; justify-content: space-between; margin-bottom: 40px; border-bottom: 2px solid #E1E6EF; padding-bottom: 20px; }
-                          .company { font-size: 18px; font-weight: bold; color: #0B1F3A; }
-                          .invoice-title { font-size: 32px; font-weight: bold; color: #0B1F3A; }
-                          .invoice-number { font-family: monospace; }
-                          .status { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-top: 10px; }
-                          .status.paid { background-color: #D1FAE5; color: #059669; }
-                          .status.pending { background-color: #FEF3C7; color: #92400E; }
-                          .details { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
-                          .section { margin-bottom: 30px; }
-                          .section-title { font-weight: bold; margin-bottom: 10px; font-size: 12px; color: #2E3440; }
-                          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                          th, td { border-bottom: 1px solid #E1E6EF; padding: 12px; text-align: left; }
-                          th { background-color: #F7F9FC; font-weight: bold; }
-                          .total-section { float: right; width: 300px; margin-top: 20px; }
-                          .total-line { display: flex; justify-content: space-between; margin-bottom: 10px; }
-                          .total-amount { font-size: 24px; font-weight: bold; color: #D4AF37; display: flex; justify-content: space-between; border-top: 2px solid #E1E6EF; padding-top: 10px; }
-                        </style>
-                      </head>
-                      <body>
-                        <div class="header">
-                          <div>
-                            <div class="company">EquipraAfrica</div>
-                            <p>Victoria Island, Lagos</p>
-                            <p>billing@equipraafrica.ng</p>
-                          </div>
-                          <div style="text-align: right;">
-                            <div class="invoice-title">INVOICE</div>
-                            <div class="invoice-number">${inv.id}</div>
-                            <span class="status ${inv.status}">${inv.status.toUpperCase()}</span>
-                          </div>
-                        </div>
-
-                        <div class="details">
-                          <div>
-                            <div class="section-title">Bill To:</div>
-                            <div class="section">
-                              <strong>Consolidated Hallmark Group</strong><br>
-                              Victoria Island, Lagos
-                            </div>
-                          </div>
-                          <div>
-                            <div class="section-title">Invoice Details</div>
-                            <div class="section">
-                              <div class="total-line">
-                                <span>Invoice Date:</span>
-                                <strong>${new Date(inv.issueDate).toLocaleDateString()}</strong>
-                              </div>
-                              <div class="total-line">
-                                <span>Due Date:</span>
-                                <strong>${new Date(inv.dueDate).toLocaleDateString()}</strong>
-                              </div>
-                              ${inv.paidDate ? `<div class="total-line"><span>Paid On:</span><strong>${new Date(inv.paidDate).toLocaleDateString()}</strong></div>` : ''}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="section">
-                          <h3>Subscription Details</h3>
-                          <table>
-                            <thead>
-                              <tr>
-                                <th>Device</th>
-                                <th>User</th>
-                                <th>Rate/Day</th>
-                                <th>Days</th>
-                                <th>Amount</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              ${inv.devices.map(d => `
-                                <tr>
-                                  <td>${d.model}</td>
-                                  <td>${d.user}</td>
-                                  <td>₦${(d.rate / 30).toFixed(0)}</td>
-                                  <td>${d.days}</td>
-                                  <td>₦${((d.rate * d.days) / 30).toLocaleString()}</td>
-                                </tr>
-                              `).join('')}
-                            </tbody>
-                          </table>
-                        </div>
-
-                        <div class="total-section">
-                          <div class="total-line">
-                            <span>Subtotal:</span>
-                            <strong>₦${inv.devices.reduce((sum, d) => sum + (d.rate * d.days / 30), 0).toLocaleString(undefined, {maximumFractionDigits:0})}</strong>
-                          </div>
-                          ${inv.credits.length > 0 ? `<div class="total-line"><span>Credits:</span><strong style="color: #10B981;">-₦${Math.abs(inv.credits.reduce((sum, c) => sum + c.amount, 0)).toLocaleString()}</strong></div>` : ''}
-                          <div class="total-line">
-                            <span>VAT (7.5%):</span>
-                            <strong>₦${((inv.devices.reduce((sum, d) => sum + (d.rate * d.days / 30), 0) + inv.credits.reduce((sum, c) => sum + c.amount, 0)) * 0.075).toLocaleString(undefined, {maximumFractionDigits:0})}</strong>
-                          </div>
-                          <div class="total-amount">
-                            <span>Total:</span>
-                            <strong>₦${(inv.devices.reduce((sum, d) => sum + (d.rate * d.days / 30), 0) + inv.credits.reduce((sum, c) => sum + c.amount, 0) + (inv.devices.reduce((sum, d) => sum + (d.rate * d.days / 30), 0) + inv.credits.reduce((sum, c) => sum + c.amount, 0)) * 0.075).toLocaleString(undefined, {maximumFractionDigits:0})}</strong>
-                          </div>
-                        </div>
-                      </body>
-                    </html>
-                  `;
-                  const printWindow = window.open('', '', 'height=600,width=800');
-                  printWindow.document.write(html);
-                  printWindow.document.close();
-                  printWindow.print();
-                }}
-                className="px-4 py-2 rounded-lg border-2 text-sm font-medium" style={{ borderColor: P.border, color: P.navy }}>
+              <button className="px-4 py-2 rounded-lg border-2 text-sm font-medium" style={{ borderColor: P.border, color: P.navy }}>
                 <Download className="w-4 h-4 inline mr-1.5" />Download PDF
               </button>
               {(inv.status === 'pending' && !paidInvoices.includes(inv.id)) && (
@@ -452,31 +267,9 @@ export default function Billing() {
             <h1 className="text-2xl font-bold" style={{ color: P.navy }}>Billing & Invoices</h1>
             <p className="text-sm mt-0.5" style={{ color: P.text }}>Manage subscriptions and payments</p>
           </div>
-          <div className="relative">
-             <button 
-               onClick={() => setExportFormat(exportFormat ? null : 'menu')}
-               className="px-4 py-2 rounded-lg border-2 text-sm font-medium flex items-center" 
-               style={{ borderColor: P.border, color: P.navy }}>
-               <Download className="w-4 h-4 mr-1.5" />Export Statement
-               <ChevronDown className="w-4 h-4 ml-1.5" />
-             </button>
-             {exportFormat === 'menu' && (
-               <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border z-10" style={{ borderColor: P.border }}>
-                 <button 
-                   onClick={() => handleExportStatement('csv')}
-                   className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors border-b"
-                   style={{ borderColor: P.border, color: P.navy }}>
-                   Export as CSV
-                 </button>
-                 <button 
-                   onClick={() => handleExportStatement('pdf')}
-                   className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors"
-                   style={{ color: P.navy }}>
-                   Export as PDF
-                 </button>
-               </div>
-             )}
-           </div>
+          <button className="px-4 py-2 rounded-lg border-2 text-sm font-medium flex items-center" style={{ borderColor: P.border, color: P.navy }}>
+            <Download className="w-4 h-4 mr-1.5" />Export Statement
+          </button>
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
