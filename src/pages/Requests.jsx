@@ -191,6 +191,8 @@ export default function Requests() {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [showPayment, setShowPayment] = useState(false);
   const [form, setForm] = useState({
     requestType: '', quantity: 1, deliveryLocation: '', requiredDate: '', costCenter: '', approver: '',
     deviceClass: '', brand: '', processor: '', ram: '', storage: '', screenSize: '', os: '',
