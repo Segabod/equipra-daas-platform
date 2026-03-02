@@ -28,6 +28,8 @@ export default function RequestHistory() {
   const [sortDir, setSortDir] = useState('desc');
   const [selected, setSelected] = useState(null);
   const [approving, setApproving] = useState(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [showRejectInput, setShowRejectInput] = useState(false);
 
   const load = () => base44.entities.DeviceRequest.list('-created_date', 100).then(r => { setRequests(r); setLoading(false); });
 
