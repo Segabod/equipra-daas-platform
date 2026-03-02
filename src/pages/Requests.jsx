@@ -61,6 +61,7 @@ export default function Requests() {
 
   const handleSubmit = async () => {
     setSubmitting(true);
+    const user = await base44.auth.me().catch(() => null);
     await base44.entities.DeviceRequest.create({
       request_type: form.requestType,
       quantity: form.quantity,
@@ -79,6 +80,13 @@ export default function Requests() {
       service_bundle: form.serviceBundle,
       notes: form.notes,
       status: 'pending_approval',
+    });
+    await base44.entities.Notification.create({
+      user_email: user?.email || 'admin',
+      title: 'Device Request Submitted',
+      message: `Your request for ${form.quantity}× ${form.deviceClass} device(s) has been submitted and is pending approval from ${form.approver}.`,
+      type: 'request_submitted',
+      link_page: 'RequestHistory',
     });
     const updated = await base44.entities.DeviceRequest.list('-created_date', 50);
     setRequests(updated);
