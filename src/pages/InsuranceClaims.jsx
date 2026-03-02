@@ -42,6 +42,12 @@ export default function InsuranceClaims() {
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [detailClaim, setDetailClaim] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [managerNotes, setManagerNotes] = useState('');
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [showRejectInput, setShowRejectInput] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
   const [form, setForm] = useState({
     incidentType: '', incidentDate: '', incidentLocation: '', incidentDescription: '',
     policeReport: '', estimatedValue: '', needsPoliceReport: false,
