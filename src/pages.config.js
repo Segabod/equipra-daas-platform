@@ -60,6 +60,7 @@ import Reports from './pages/Reports';
 import RequestHistory from './pages/RequestHistory';
 import Requests from './pages/Requests';
 import Tickets from './pages/Tickets';
+import PredictiveMaintenance from './pages/PredictiveMaintenance';
 import __Layout from './Layout.jsx';
 
 
@@ -77,6 +78,7 @@ export const PAGES = {
     "RequestHistory": RequestHistory,
     "Requests": Requests,
     "Tickets": Tickets,
+    "PredictiveMaintenance": PredictiveMaintenance,
 }
 
 export const pagesConfig = {
