@@ -1,0 +1,50 @@
+{
+  "name": "Company",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "size": {
+      "type": "string",
+      "enum": [
+        "1-10",
+        "11-50",
+        "51-200",
+        "201-500",
+        "500+"
+      ]
+    },
+    "country": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "plan": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "premium",
+        "enterprise"
+      ],
+      "default": "standard"
+    },
+    "onboarded": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

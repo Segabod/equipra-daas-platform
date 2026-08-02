@@ -1,0 +1,134 @@
+{
+  "name": "Device",
+  "type": "object",
+  "properties": {
+    "asset_tag": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "serial": {
+      "type": "string"
+    },
+    "brand": {
+      "type": "string"
+    },
+    "processor": {
+      "type": "string"
+    },
+    "ram": {
+      "type": "string"
+    },
+    "storage": {
+      "type": "string"
+    },
+    "screen_size": {
+      "type": "string"
+    },
+    "os": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "deployed",
+        "in_stock",
+        "in_repair",
+        "awaiting_swap",
+        "returned",
+        "retired",
+        "lost_stolen"
+      ],
+      "default": "in_stock"
+    },
+    "device_class": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "developer",
+        "executive"
+      ]
+    },
+    "assigned_user": {
+      "type": "string"
+    },
+    "assigned_email": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "purchase_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "lease_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "lease_end": {
+      "type": "string",
+      "format": "date"
+    },
+    "warranty_expiry": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_of_life_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "refresh_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "monthly_rate": {
+      "type": "number"
+    },
+    "condition_score": {
+      "type": "number"
+    },
+    "warranty": {
+      "type": "string"
+    },
+    "insurance": {
+      "type": "string"
+    },
+    "disposition_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "retired",
+        "recycled",
+        "resold",
+        "donated",
+        "lost_written_off"
+      ],
+      "default": "active"
+    },
+    "disposition_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "disposition_notes": {
+      "type": "string"
+    },
+    "warranty_alert_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "eol_alert_sent": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "asset_tag",
+    "model",
+    "status"
+  ]
+}

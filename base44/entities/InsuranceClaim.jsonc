@@ -1,0 +1,113 @@
+{
+  "name": "InsuranceClaim",
+  "type": "object",
+  "properties": {
+    "claim_number": {
+      "type": "string"
+    },
+    "device_asset_tag": {
+      "type": "string"
+    },
+    "device_model": {
+      "type": "string"
+    },
+    "assigned_user": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "incident_type": {
+      "type": "string",
+      "enum": [
+        "accidental_damage",
+        "liquid_damage",
+        "theft",
+        "loss",
+        "fire",
+        "power_surge",
+        "screen_crack",
+        "other"
+      ]
+    },
+    "incident_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "incident_location": {
+      "type": "string"
+    },
+    "incident_description": {
+      "type": "string"
+    },
+    "police_report_number": {
+      "type": "string"
+    },
+    "estimated_value": {
+      "type": "number"
+    },
+    "claim_amount": {
+      "type": "number"
+    },
+    "approved_amount": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "submitted",
+        "under_review",
+        "pending_manager_approval",
+        "approved",
+        "rejected",
+        "paid",
+        "withdrawn"
+      ],
+      "default": "draft"
+    },
+    "insurer_reference": {
+      "type": "string"
+    },
+    "rejection_reason": {
+      "type": "string"
+    },
+    "supporting_docs": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "reviewed_by": {
+      "type": "string"
+    },
+    "resolved_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "requires_manager_approval": {
+      "type": "boolean",
+      "default": false
+    },
+    "manager_approved": {
+      "type": "boolean",
+      "default": false
+    },
+    "manager_approved_by": {
+      "type": "string"
+    },
+    "manager_approval_notes": {
+      "type": "string"
+    },
+    "manager_approval_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "device_asset_tag",
+    "incident_type",
+    "incident_date",
+    "incident_description"
+  ]
+}

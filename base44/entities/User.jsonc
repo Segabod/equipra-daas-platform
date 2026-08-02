@@ -1,0 +1,34 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "it_admin",
+        "manager",
+        "claims_manager",
+        "claims_adjuster",
+        "approver",
+        "end_user",
+        "user"
+      ],
+      "default": "user"
+    },
+    "department": {
+      "type": "string"
+    },
+    "company_name": {
+      "type": "string"
+    },
+    "company_onboarded": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "department",
+    "company_name"
+  ]
+}

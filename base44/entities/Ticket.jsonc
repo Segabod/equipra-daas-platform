@@ -1,0 +1,99 @@
+{
+  "name": "Ticket",
+  "type": "object",
+  "properties": {
+    "ticket_id": {
+      "type": "string"
+    },
+    "device_asset_tag": {
+      "type": "string"
+    },
+    "device_model": {
+      "type": "string"
+    },
+    "assigned_user": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "issue_type": {
+      "type": "string",
+      "enum": [
+        "hardware_fault",
+        "screen_damage",
+        "battery_issue",
+        "keyboard_issue",
+        "liquid_spill",
+        "os_software",
+        "performance",
+        "accessories",
+        "lost_stolen",
+        "preventive"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "pickup_scheduled",
+        "in_repair",
+        "swap_delivered",
+        "resolved",
+        "closed"
+      ],
+      "default": "open"
+    },
+    "pickup_location": {
+      "type": "string"
+    },
+    "pickup_time": {
+      "type": "string"
+    },
+    "need_swap": {
+      "type": "boolean",
+      "default": false
+    },
+    "resolution": {
+      "type": "string"
+    },
+    "technician": {
+      "type": "string"
+    },
+    "cost": {
+      "type": "number",
+      "default": 0
+    },
+    "covered": {
+      "type": "boolean",
+      "default": true
+    },
+    "sla_target": {
+      "type": "string"
+    },
+    "resolved_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "device_asset_tag",
+    "issue_type",
+    "severity",
+    "description"
+  ]
+}

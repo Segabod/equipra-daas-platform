@@ -1,0 +1,37 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "request_submitted",
+        "request_status_change",
+        "refresh_warning",
+        "device_repair"
+      ]
+    },
+    "read": {
+      "type": "boolean",
+      "default": false
+    },
+    "link_page": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_email",
+    "title",
+    "message",
+    "type"
+  ]
+}

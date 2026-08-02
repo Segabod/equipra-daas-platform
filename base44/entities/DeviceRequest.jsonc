@@ -1,0 +1,101 @@
+{
+  "name": "DeviceRequest",
+  "type": "object",
+  "properties": {
+    "request_type": {
+      "type": "string",
+      "enum": [
+        "new_hire",
+        "expansion",
+        "replacement",
+        "upgrade",
+        "loaner"
+      ]
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1
+    },
+    "delivery_location": {
+      "type": "string"
+    },
+    "required_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "cost_center": {
+      "type": "string"
+    },
+    "approver": {
+      "type": "string"
+    },
+    "device_class": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "developer",
+        "executive"
+      ]
+    },
+    "brand": {
+      "type": "string"
+    },
+    "processor": {
+      "type": "string"
+    },
+    "ram": {
+      "type": "string"
+    },
+    "storage": {
+      "type": "string"
+    },
+    "screen_size": {
+      "type": "string"
+    },
+    "os": {
+      "type": "string"
+    },
+    "accessories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "service_bundle": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "premium",
+        "executive"
+      ],
+      "default": "standard"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_approval",
+        "approved",
+        "in_fulfillment",
+        "delivered",
+        "rejected"
+      ],
+      "default": "draft"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "rejection_reason": {
+      "type": "string"
+    },
+    "estimated_monthly_cost": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "request_type",
+    "quantity",
+    "delivery_location",
+    "device_class"
+  ]
+}
